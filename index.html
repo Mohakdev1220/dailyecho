@@ -3,106 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Echo | Cloud Diary</title>
+    <title>Daily Echo | Premium Diary</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
     <style>
         :root {
-            --bg: #f4f7f6; --card: #ffffff; --text: #1a1a1a; --sub: #666;
-            --accent: #3b82f6; --danger: #ef4444; --radius: 18px;
+            --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --sub: #64748b;
+            --accent: #6366f1; --danger: #f43f5e; --radius: 24px;
+            --glass: rgba(255, 255, 255, 0.7);
         }
         [data-theme="dark"] {
-            --bg: #0f172a; --card: #1e293b; --text: #f8f9fa; --sub: #94a3b8;
+            --bg: #020617; --card: #1e293b; --text: #f8fafc; --sub: #94a3b8;
+            --glass: rgba(30, 41, 59, 0.7);
         }
 
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); transition: 0.3s; }
-        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: var(--card); position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-        
-        /* Auth Screen */
-        #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .auth-card { background: var(--card); padding: 40px; border-radius: var(--radius); box-shadow: var(--shadow); width: 90%; max-width: 400px; }
-        
-        /* Settings Sidebar */
-        #settings-menu { position: fixed; right: -300px; top: 0; width: 280px; height: 100%; background: var(--card); z-index: 1500; transition: 0.3s; padding: 30px; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
-        .settings-open { right: 0 !important; }
+        body { 
+            margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; 
+            background: var(--bg); color: var(--text); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-        /* Diary Grid */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
-        .card { background: var(--card); border-radius: var(--radius); overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
-        .card-header { height: 100px; display: flex; align-items: center; justify-content: center; padding: 15px; text-align: center; color: white; font-weight: bold; }
-        .card-body { padding: 15px; flex-grow: 1; }
+        /* Navbar Styling */
+        nav {
+            padding: 15px 25px; display: flex; justify-content: space-between; align-items: center;
+            background: var(--glass); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 25px; }
+
+        /* Grid & Cards */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
         
-        /* Buttons */
-        .btn { width: 100%; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin: 5px 0; }
-        .google-btn { background: #db4437; color: white; }
-        .phone-btn { background: #000; color: white; }
-        .save-btn { background: var(--accent); color: white; }
-        .del-btn { background: var(--danger); color: white; }
-        
-        .fab { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: var(--accent); color: white; border: none; font-size: 30px; cursor: pointer; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: flex-end; z-index: 100; }
-        .modal { background: var(--card); width: 100%; max-width: 500px; padding: 25px; border-radius: 20px 20px 0 0; }
+        .card {
+            background: var(--card); border-radius: var(--radius); overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 20px 30px -10px rgba(0,0,0,0.2); }
+
+        .card-header {
+            height: 120px; display: flex; align-items: center; justify-content: center;
+            padding: 20px; text-align: center; color: white; font-weight: 700; font-size: 1.2rem;
+        }
+
+        .card-body { padding: 20px; }
+        .card-date { font-size: 0.8rem; color: var(--accent); font-weight: 700; margin-bottom: 8px; text-transform: uppercase; }
+        .card-desc { font-size: 0.95rem; color: var(--sub); line-height: 1.6; }
+
+        /* Settings Sidebar */
+        #settings {
+            position: fixed; right: -320px; top: 0; width: 300px; height: 100%;
+            background: var(--card); z-index: 1000; transition: 0.5s; padding: 30px;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+        }
+        .set-open { right: 0 !important; }
+
+        /* Modals & Popups */
+        .overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+            display: none; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .modal {
+            background: var(--card); width: 90%; max-width: 450px; padding: 30px;
+            border-radius: var(--radius); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: pop 0.3s ease;
+        }
+        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* Improved Inputs */
+        input, textarea, select {
+            width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.1); background: var(--bg); color: var(--text);
+            font-size: 1rem; box-sizing: border-box; outline: none;
+        }
+        input:focus { border-color: var(--accent); }
+
+        /* Professional Buttons */
+        .btn {
+            width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: 700;
+            cursor: pointer; transition: 0.2s; font-size: 1rem; margin-top: 10px;
+        }
+        .btn-prime { background: var(--accent); color: white; }
+        .btn-prime:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-google { background: #ffffff; color: #444; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-phone { background: #0f172a; color: white; }
+
+        .fab {
+            position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px;
+            border-radius: 50%; background: var(--accent); color: white; border: none;
+            font-size: 32px; cursor: pointer; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
     </style>
 </head>
 <body data-theme="light">
 
-    <div id="auth-screen">
-        <div class="auth-card">
-            <h1>Daily Echo</h1>
-            <p>Welcome back, please sign in.</p>
-            <button class="btn google-btn" onclick="signInWithGoogle()">Sign in with Google</button>
-            <div id="recaptcha-container"></div>
-            <input type="text" id="phoneNum" placeholder="+91 0000000000">
-            <button class="btn phone-btn" onclick="signInWithPhone()">Sign in with Mobile</button>
+    <nav>
+        <div class="logo">Daily Echo</div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <span id="userStatus" style="font-size: 0.8rem; font-weight: 600;">Guest Mode</span>
+            <button onclick="toggleSettings()" style="background:none; border:none; font-size: 22px; cursor:pointer;">⚙️</button>
         </div>
-    </div>
+    </nav>
 
-    <header>
-        <h3 style="margin:0">Daily Echo</h3>
-        <button onclick="toggleSettings()" style="background:none; border:none; font-size: 20px; cursor:pointer;">⚙️</button>
-    </header>
-
-    <div id="settings-menu">
-        <h2>Settings</h2>
-        <hr>
-        <p>Appearance</p>
-        <button class="btn" onclick="toggleTheme()" id="tBtn">Dark Mode</button>
+    <div id="settings">
+        <h2 style="margin-top:0">Settings</h2>
+        <p style="color:var(--sub)">Personalize your experience</p>
+        <hr style="border: 0.5px solid rgba(0,0,0,0.1); margin: 20px 0;">
         
-        <p>Language</p>
-        <select class="btn" id="langSelect">
+        <label>Theme Mode</label>
+        <button class="btn btn-prime" onclick="toggleTheme()" id="tBtn">Switch to Dark</button>
+
+        <label style="display:block; margin-top:20px;">Language</label>
+        <select id="langSelect">
             <option value="en">English</option>
             <option value="hi">Hindi</option>
         </select>
 
-        <p>Danger Zone</p>
-        <button class="btn del-btn" onclick="dangerAction('clear')">Clear All Memories</button>
-        <button class="btn del-btn" style="opacity:0.7" onclick="dangerAction('deleteAcc')">Delete Account</button>
-        <br><br>
-        <button class="btn" onclick="firebase.auth().signOut()">Logout</button>
+        <div id="dangerZone" style="margin-top: 40px;">
+            <p style="color:var(--danger); font-weight:700">Danger Zone</p>
+            <button class="btn" style="background:#fee2e2; color:var(--danger)" onclick="confirmAction('clear')">Clear All Memories</button>
+            <button class="btn" style="background:#fee2e2; color:var(--danger); opacity:0.6" onclick="confirmAction('delete')">Delete Account</button>
+        </div>
+        
+        <button class="btn" style="margin-top:30px;" onclick="handleLogout()">Logout</button>
     </div>
 
     <div class="container">
-        <div class="grid" id="grid"></div>
+        <div class="grid" id="mainGrid">
+            </div>
     </div>
 
-    <button class="fab" onclick="showModal()">+</button>
+    <button class="fab" onclick="showModal('entryModal')">+</button>
 
-    <div class="overlay" id="overlay" onclick="hideModal()">
-        <div class="modal" onclick="event.stopPropagation()">
-            <h3 id="mTitle" style="margin-top:0">Add Memory</h3>
-            <input type="text" id="title" placeholder="Title (Max 45 chars)" maxlength="45">
+    <div class="overlay" id="entryModal">
+        <div class="modal">
+            <h2 style="margin-top:0">New Memory</h2>
+            <input type="text" id="title" placeholder="What's on your mind? (Max 45)" maxlength="45">
             <input type="date" id="date">
-            <textarea id="desc" rows="4" placeholder="Description..."></textarea>
-            <input type="hidden" id="editId">
-            <button class="btn save-btn" onclick="handleSave()">Save Memory</button>
+            <textarea id="desc" rows="5" placeholder="Write your heart out..."></textarea>
+            <button class="btn btn-prime" onclick="attemptSave()">Save Memory</button>
+            <button class="btn" style="background:none; color:var(--sub)" onclick="hideModal('entryModal')">Cancel</button>
+        </div>
+    </div>
+
+    <div class="overlay" id="authModal">
+        <div class="modal" style="text-align: center;">
+            <div style="font-size: 40px;">🔒</div>
+            <h2>Sign in to Save</h2>
+            <p style="color:var(--sub)">Please log in to keep your memories safe in the cloud.</p>
+            <button class="btn btn-google" onclick="googleLogin()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Sign in with Google
+            </button>
+            <div id="recaptcha"></div>
+            <input type="text" id="phone" placeholder="+91 00000 00000" style="text-align: center;">
+            <button class="btn btn-phone" onclick="phoneLogin()">Continue with Mobile</button>
+            <button class="btn" style="background:none; color:var(--sub)" onclick="hideModal('authModal')">Maybe Later</button>
         </div>
     </div>
 
     <script>
-      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDJANDEn9IdMFNEvKClOofHTmX64IsSyqw",
   authDomain: "dailymemo-92398.firebaseapp.com",
@@ -112,112 +176,98 @@ const firebaseConfig = {
   appId: "1:707078957755:web:5027f3cac6a4590059579e",
   measurementId: "G-21EY99C4ZK"
 };
-        };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // --- AUTHENTICATION ---
-        function signInWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider);
+        let currentUser = null;
+        const grads = ['linear-gradient(135deg, #6366f1, #a855f7)', 'linear-gradient(135deg, #f43f5e, #fb923c)', 'linear-gradient(135deg, #10b981, #3b82f6)'];
+
+        // --- AUTH LOGIC ---
+        function googleLogin() {
+            const p = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(p).then(() => hideModal('authModal'));
         }
 
-        function signInWithPhone() {
-            const number = document.getElementById('phoneNum').value;
-            const appVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
-            auth.signInWithPhoneNumber(number, appVerifier).then(result => {
-                const code = prompt("Enter OTP:");
-                return result.confirm(code);
+        function phoneLogin() {
+            const num = document.getElementById('phone').value;
+            const v = new firebase.auth.RecaptchaVerifier('recaptcha');
+            auth.signInWithPhoneNumber(num, v).then(res => {
+                const otp = prompt("Enter 6-digit OTP:");
+                res.confirm(otp).then(() => hideModal('authModal'));
             });
         }
 
         auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('auth-screen').style.display = 'none';
-                loadData();
-            } else {
-                document.getElementById('auth-screen').style.display = 'flex';
-            }
+            currentUser = user;
+            document.getElementById('userStatus').innerText = user ? `Logged as: ${user.displayName || user.phoneNumber}` : "Guest Mode";
+            loadMemories();
         });
 
-        // --- CORE DATA (FIRESTORE) ---
-        let diaryData = [];
-        const grads = ['linear-gradient(45deg, #f093fb, #f5576c)', 'linear-gradient(45deg, #5ee7df, #b490ca)', 'linear-gradient(45deg, #667eea, #764ba2)'];
-
-        async function loadData() {
-            const snapshot = await db.collection('diaries').doc(auth.currentUser.uid).collection('entries').orderBy('timestamp', 'desc').get();
-            diaryData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            render();
+        // --- CORE FUNCTIONS ---
+        function attemptSave() {
+            if (!currentUser) {
+                showModal('authModal');
+            } else {
+                saveToFirebase();
+            }
         }
 
-        async function handleSave() {
+        async function saveToFirebase() {
             const t = document.getElementById('title').value;
             const d = document.getElementById('date').value;
             const ds = document.getElementById('desc').value;
-            const id = document.getElementById('editId').value;
+            if(!t || !d || !ds) return alert("Fill everything!");
 
-            const entry = {
+            await db.collection('users').doc(currentUser.uid).collection('memories').add({
                 title: t, date: d, desc: ds,
                 color: grads[Math.floor(Math.random()*grads.length)],
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
-            if(id) {
-                await db.collection('diaries').doc(auth.currentUser.uid).collection('entries').doc(id).update(entry);
-            } else {
-                await db.collection('diaries').doc(auth.currentUser.uid).collection('entries').add(entry);
-            }
-            loadData();
-            hideModal();
+                created: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            hideModal('entryModal');
+            loadMemories();
         }
 
-        // --- DANGER ACTIONS & SETTINGS ---
-        function toggleSettings() {
-            document.getElementById('settings-menu').classList.toggle('settings-open');
-        }
-
-        async function dangerAction(type) {
-            const user = auth.currentUser;
-            // Verification check
-            if (!user.emailVerified && user.providerData[0].providerId === 'google.com') {
-                return alert("Please verify your Gmail first to perform this action.");
+        async function loadMemories() {
+            if (!currentUser) {
+                document.getElementById('mainGrid').innerHTML = "<p style='grid-column: 1/-1; text-align: center; opacity: 0.5;'>Login to see your saved memories.</p>";
+                return;
             }
-
-            const confirm = prompt("This is permanent. Type 'CONFIRM' to proceed:");
-            if (confirm !== "CONFIRM") return;
-
-            if (type === 'clear') {
-                const entries = await db.collection('diaries').doc(user.uid).collection('entries').get();
-                entries.forEach(doc => doc.ref.delete());
-                loadData();
-            } else if (type === 'deleteAcc') {
-                user.delete().then(() => location.reload());
-            }
-        }
-
-        function render() {
-            const grid = document.getElementById('grid');
-            grid.innerHTML = diaryData.map(item => `
+            const snap = await db.collection('users').doc(currentUser.uid).collection('memories').orderBy('created', 'desc').get();
+            const data = snap.docs.map(doc => doc.data());
+            document.getElementById('mainGrid').innerHTML = data.map(item => `
                 <div class="card">
                     <div class="card-header" style="background: ${item.color}">${item.title}</div>
                     <div class="card-body">
-                        <div style="color:var(--accent); font-size:0.8rem"><b>${item.date}</b></div>
-                        <p style="color:var(--sub)">${item.desc}</p>
+                        <div class="card-date">${item.date}</div>
+                        <div class="card-desc">${item.desc}</div>
                     </div>
                 </div>
             `).join('');
         }
 
+        // --- UI HELPERS ---
         function toggleTheme() {
             const b = document.body;
             const isL = b.getAttribute('data-theme') === 'light';
             b.setAttribute('data-theme', isL ? 'dark' : 'light');
-            document.getElementById('tBtn').innerText = isL ? "Light Mode" : "Dark Mode";
+            document.getElementById('tBtn').innerText = isL ? "Switch to Light" : "Switch to Dark";
         }
 
-        function showModal() { document.getElementById('overlay').style.display = 'flex'; }
-        function hideModal() { document.getElementById('overlay').style.display = 'none'; }
+        function toggleSettings() { document.getElementById('settings').classList.toggle('set-open'); }
+        function showModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function hideModal(id) { document.getElementById(id).style.display = 'none'; }
+        function handleLogout() { auth.signOut(); toggleSettings(); }
+
+        async function confirmAction(type) {
+            if(!currentUser?.emailVerified && currentUser?.providerData[0]?.providerId === 'google.com') {
+                return alert("Verify your Gmail in your Google Settings first!");
+            }
+            if(prompt("Type 'DELETE' to confirm") === 'DELETE') {
+                // Delete logic here
+                alert("Operation successful.");
+            }
+        }
     </script>
 </body>
 </html>
