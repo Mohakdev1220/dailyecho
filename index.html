@@ -3,270 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Echo | Premium Diary</title>
+    <title>Daily Echo | Next-Gen Diary</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
     <style>
         :root {
-            --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --sub: #64748b;
-            --accent: #6366f1; --danger: #f43f5e; --radius: 24px;
-            --glass: rgba(255, 255, 255, 0.7);
-        }
-        [data-theme="dark"] {
-            --bg: #020617; --card: #1e293b; --text: #f8fafc; --sub: #94a3b8;
-            --glass: rgba(30, 41, 59, 0.7);
+            --primary: #6366f1;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg-dark: #020617;
+            --text-white: #f8fafc;
         }
 
-        body { 
-            margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; 
-            background: var(--bg); color: var(--text); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0; background: var(--bg-dark); color: var(--text-white);
+            font-family: 'Inter', -apple-system, sans-serif; overflow-x: hidden;
         }
 
-        /* Navbar Styling */
+        /* Dynamic Mesh Background */
+        .bg-animate {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 0% 0%, #1e1b4b 0%, transparent 50%),
+                        radial-gradient(circle at 100% 100%, #312e81 0%, transparent 50%),
+                        radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+            animation: pulseBg 10s infinite alternate;
+        }
+        @keyframes pulseBg { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+
+        /* Header */
         nav {
-            padding: 15px 25px; display: flex; justify-content: space-between; align-items: center;
-            background: var(--glass); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 100;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            height: 70px; padding: 0 25px; display: flex; justify-content: space-between;
+            align-items: center; background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 100;
         }
+        .logo { font-size: 1.6rem; font-weight: 900; letter-spacing: -1px; background: linear-gradient(45deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* Grid */
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
 
-        .container { max-width: 1100px; margin: 0 auto; padding: 25px; }
-
-        /* Grid & Cards */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
-        
+        /* Glass Card */
         .card {
-            background: var(--card); border-radius: var(--radius); overflow: hidden;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); transition: 0.3s;
-            border: 1px solid rgba(255,255,255,0.1);
+            background: var(--glass); border: 1px solid var(--glass-border);
+            border-radius: 30px; overflow: hidden; backdrop-filter: blur(10px);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            animation: fadeIn 0.8s ease backwards;
         }
-        .card:hover { transform: translateY(-8px); box-shadow: 0 20px 30px -10px rgba(0,0,0,0.2); }
+        .card:hover { transform: translateY(-10px) scale(1.02); border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
         .card-header {
-            height: 120px; display: flex; align-items: center; justify-content: center;
-            padding: 20px; text-align: center; color: white; font-weight: 700; font-size: 1.2rem;
+            height: 130px; display: flex; align-items: center; justify-content: center;
+            padding: 25px; text-align: center; font-weight: 800; font-size: 1.3rem;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        .card-body { padding: 20px; }
-        .card-date { font-size: 0.8rem; color: var(--accent); font-weight: 700; margin-bottom: 8px; text-transform: uppercase; }
-        .card-desc { font-size: 0.95rem; color: var(--sub); line-height: 1.6; }
+        .card-body { padding: 25px; }
+        .card-date { color: var(--primary); font-size: 0.8rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .card-desc { color: #94a3b8; line-height: 1.6; font-size: 1rem; }
 
-        /* Settings Sidebar */
-        #settings {
-            position: fixed; right: -320px; top: 0; width: 300px; height: 100%;
-            background: var(--card); z-index: 1000; transition: 0.5s; padding: 30px;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-        }
-        .set-open { right: 0 !important; }
-
-        /* Modals & Popups */
+        /* Interactive Bottom Sheets (Modals) */
         .overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
-            display: none; justify-content: center; align-items: center; z-index: 2000;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px); display: none; align-items: flex-end; z-index: 1000;
         }
         .modal {
-            background: var(--card); width: 90%; max-width: 450px; padding: 30px;
-            border-radius: var(--radius); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: pop 0.3s ease;
+            background: #0f172a; width: 100%; max-width: 600px; margin: 0 auto;
+            border-radius: 40px 40px 0 0; padding: 40px 30px;
+            transform: translateY(100%); transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal.active { transform: translateY(0); }
 
-        /* Improved Inputs */
-        input, textarea, select {
-            width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px;
-            border: 1px solid rgba(0,0,0,0.1); background: var(--bg); color: var(--text);
-            font-size: 1rem; box-sizing: border-box; outline: none;
+        /* Inputs & Buttons */
+        input, textarea {
+            width: 100%; background: #1e293b; border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 18px; color: white; font-size: 1rem;
+            margin-bottom: 15px; outline: none; transition: 0.3s;
         }
-        input:focus { border-color: var(--accent); }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2); }
 
-        /* Professional Buttons */
         .btn {
-            width: 100%; padding: 14px; border-radius: 12px; border: none; font-weight: 700;
-            cursor: pointer; transition: 0.2s; font-size: 1rem; margin-top: 10px;
+            width: 100%; padding: 18px; border-radius: 20px; border: none;
+            font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.3s;
         }
-        .btn-prime { background: var(--accent); color: white; }
-        .btn-prime:hover { opacity: 0.9; transform: translateY(-2px); }
-        .btn-google { background: #ffffff; color: #444; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-phone { background: #0f172a; color: white; }
+        .btn-main { background: var(--primary); color: white; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4); }
+        .btn-main:hover { transform: scale(1.02); filter: brightness(1.1); }
+        .btn-google { background: white; color: #000; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
         .fab {
-            position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px;
-            border-radius: 50%; background: var(--accent); color: white; border: none;
-            font-size: 32px; cursor: pointer; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+            position: fixed; bottom: 40px; right: 30px; width: 75px; height: 75px;
+            border-radius: 24px; background: var(--primary); color: white; border: none;
+            font-size: 35px; cursor: pointer; box-shadow: 0 20px 40px rgba(99, 102, 241, 0.5);
+            transition: 0.3s;
         }
+        .fab:hover { transform: rotate(90deg) scale(1.1); }
     </style>
 </head>
-<body data-theme="light">
+<body>
+
+    <div class="bg-animate"></div>
 
     <nav>
-        <div class="logo">Daily Echo</div>
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <span id="userStatus" style="font-size: 0.8rem; font-weight: 600;">Guest Mode</span>
-            <button onclick="toggleSettings()" style="background:none; border:none; font-size: 22px; cursor:pointer;">⚙️</button>
-        </div>
+        <div class="logo">ECHO</div>
+        <button onclick="toggleSheet('settingsSheet')" style="background:none; border:none; font-size: 24px; cursor:pointer;">🔮</button>
     </nav>
 
-    <div id="settings">
-        <h2 style="margin-top:0">Settings</h2>
-        <p style="color:var(--sub)">Personalize your experience</p>
-        <hr style="border: 0.5px solid rgba(0,0,0,0.1); margin: 20px 0;">
-        
-        <label>Theme Mode</label>
-        <button class="btn btn-prime" onclick="toggleTheme()" id="tBtn">Switch to Dark</button>
-
-        <label style="display:block; margin-top:20px;">Language</label>
-        <select id="langSelect">
-            <option value="en">English</option>
-            <option value="hi">Hindi</option>
-        </select>
-
-        <div id="dangerZone" style="margin-top: 40px;">
-            <p style="color:var(--danger); font-weight:700">Danger Zone</p>
-            <button class="btn" style="background:#fee2e2; color:var(--danger)" onclick="confirmAction('clear')">Clear All Memories</button>
-            <button class="btn" style="background:#fee2e2; color:var(--danger); opacity:0.6" onclick="confirmAction('delete')">Delete Account</button>
-        </div>
-        
-        <button class="btn" style="margin-top:30px;" onclick="handleLogout()">Logout</button>
-    </div>
-
     <div class="container">
-        <div class="grid" id="mainGrid">
-            </div>
+        <div class="grid" id="mainGrid"></div>
     </div>
 
-    <button class="fab" onclick="showModal('entryModal')">+</button>
+    <button class="fab" onclick="toggleSheet('entrySheet')">+</button>
 
-    <div class="overlay" id="entryModal">
-        <div class="modal">
-            <h2 style="margin-top:0">New Memory</h2>
-            <input type="text" id="title" placeholder="What's on your mind? (Max 45)" maxlength="45">
+    <div class="overlay" id="entrySheet" onclick="toggleSheet('entrySheet')">
+        <div class="modal" onclick="event.stopPropagation()">
+            <h1 style="margin-top:0">New Memory</h1>
+            <input type="text" id="title" placeholder="Entry Title (Max 45)" maxlength="45">
             <input type="date" id="date">
-            <textarea id="desc" rows="5" placeholder="Write your heart out..."></textarea>
-            <button class="btn btn-prime" onclick="attemptSave()">Save Memory</button>
-            <button class="btn" style="background:none; color:var(--sub)" onclick="hideModal('entryModal')">Cancel</button>
+            <textarea id="desc" rows="5" placeholder="Deep thoughts..."></textarea>
+            <button class="btn btn-main" onclick="checkAuthAndSave()">Save to Cloud</button>
         </div>
     </div>
 
-    <div class="overlay" id="authModal">
-        <div class="modal" style="text-align: center;">
-            <div style="font-size: 40px;">🔒</div>
-            <h2>Sign in to Save</h2>
-            <p style="color:var(--sub)">Please log in to keep your memories safe in the cloud.</p>
-            <button class="btn btn-google" onclick="googleLogin()">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Sign in with Google
-            </button>
-            <div id="recaptcha"></div>
-            <input type="text" id="phone" placeholder="+91 00000 00000" style="text-align: center;">
-            <button class="btn btn-phone" onclick="phoneLogin()">Continue with Mobile</button>
-            <button class="btn" style="background:none; color:var(--sub)" onclick="hideModal('authModal')">Maybe Later</button>
+    <div class="overlay" id="authSheet" onclick="toggleSheet('authSheet')">
+        <div class="modal" onclick="event.stopPropagation()" style="text-align: center;">
+            <div style="font-size: 50px; margin-bottom: 20px;">🛡️</div>
+            <h2>Secure Your Memories</h2>
+            <p style="color: #94a3b8; margin-bottom: 30px;">Login to sync your diary across all your devices.</p>
+            <button class="btn btn-google" onclick="login('google')">Sign in with Google</button>
+            <input type="text" id="phone" placeholder="+91 00000 00000" style="margin-top:20px; text-align: center;">
+            <button class="btn btn-main" onclick="login('phone')">Continue with Phone</button>
         </div>
     </div>
 
     <script>
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDJANDEn9IdMFNEvKClOofHTmX64IsSyqw",
-  authDomain: "dailymemo-92398.firebaseapp.com",
-  projectId: "dailymemo-92398",
-  storageBucket: "dailymemo-92398.firebasestorage.app",
-  messagingSenderId: "707078957755",
-  appId: "1:707078957755:web:5027f3cac6a4590059579e",
-  measurementId: "G-21EY99C4ZK"
-};
+        // REPLACE WITH YOUR FIREBASE CONFIG
+        const firebaseConfig = { apiKey: "...", authDomain: "...", projectId: "...", storageBucket: "...", messagingSenderId: "...", appId: "..." };
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        let currentUser = null;
-        const grads = ['linear-gradient(135deg, #6366f1, #a855f7)', 'linear-gradient(135deg, #f43f5e, #fb923c)', 'linear-gradient(135deg, #10b981, #3b82f6)'];
+        let user = null;
+        const gradients = [
+            'linear-gradient(135deg, #6366f1, #a855f7)',
+            'linear-gradient(135deg, #3b82f6, #2dd4bf)',
+            'linear-gradient(135deg, #f43f5e, #fb923c)'
+        ];
 
-        // --- AUTH LOGIC ---
-        function googleLogin() {
-            const p = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(p).then(() => hideModal('authModal'));
-        }
+        auth.onAuthStateChanged(u => { user = u; loadData(); });
 
-        function phoneLogin() {
-            const num = document.getElementById('phone').value;
-            const v = new firebase.auth.RecaptchaVerifier('recaptcha');
-            auth.signInWithPhoneNumber(num, v).then(res => {
-                const otp = prompt("Enter 6-digit OTP:");
-                res.confirm(otp).then(() => hideModal('authModal'));
-            });
-        }
-
-        auth.onAuthStateChanged(user => {
-            currentUser = user;
-            document.getElementById('userStatus').innerText = user ? `Logged as: ${user.displayName || user.phoneNumber}` : "Guest Mode";
-            loadMemories();
-        });
-
-        // --- CORE FUNCTIONS ---
-        function attemptSave() {
-            if (!currentUser) {
-                showModal('authModal');
+        function toggleSheet(id) {
+            const el = document.getElementById(id);
+            const modal = el.querySelector('.modal');
+            if (el.style.display === 'flex') {
+                modal.classList.remove('active');
+                setTimeout(() => el.style.display = 'none', 400);
             } else {
-                saveToFirebase();
+                el.style.display = 'flex';
+                setTimeout(() => modal.classList.add('active'), 10);
             }
         }
 
-        async function saveToFirebase() {
+        function checkAuthAndSave() {
+            if (!user) {
+                toggleSheet('entrySheet');
+                setTimeout(() => toggleSheet('authSheet'), 500);
+            } else {
+                save();
+            }
+        }
+
+        async function save() {
             const t = document.getElementById('title').value;
             const d = document.getElementById('date').value;
             const ds = document.getElementById('desc').value;
-            if(!t || !d || !ds) return alert("Fill everything!");
+            if(!t || !d || !ds) return alert("Fill fields!");
 
-            await db.collection('users').doc(currentUser.uid).collection('memories').add({
+            await db.collection('users').doc(user.uid).collection('memories').add({
                 title: t, date: d, desc: ds,
-                color: grads[Math.floor(Math.random()*grads.length)],
+                color: gradients[Math.floor(Math.random()*gradients.length)],
                 created: firebase.firestore.FieldValue.serverTimestamp()
             });
-            hideModal('entryModal');
-            loadMemories();
+            toggleSheet('entrySheet');
+            loadData();
         }
 
-        async function loadMemories() {
-            if (!currentUser) {
-                document.getElementById('mainGrid').innerHTML = "<p style='grid-column: 1/-1; text-align: center; opacity: 0.5;'>Login to see your saved memories.</p>";
-                return;
-            }
-            const snap = await db.collection('users').doc(currentUser.uid).collection('memories').orderBy('created', 'desc').get();
-            const data = snap.docs.map(doc => doc.data());
-            document.getElementById('mainGrid').innerHTML = data.map(item => `
+        async function loadData() {
+            if (!user) return;
+            const snap = await db.collection('users').doc(user.uid).collection('memories').orderBy('created', 'desc').get();
+            document.getElementById('mainGrid').innerHTML = snap.docs.map(doc => {
+                const item = doc.data();
+                return `
                 <div class="card">
                     <div class="card-header" style="background: ${item.color}">${item.title}</div>
                     <div class="card-body">
-                        <div class="card-date">${item.date}</div>
-                        <div class="card-desc">${item.desc}</div>
+                        <span class="card-date">${item.date}</span>
+                        <p class="card-desc">${item.desc}</p>
                     </div>
-                </div>
-            `).join('');
-        }
-
-        // --- UI HELPERS ---
-        function toggleTheme() {
-            const b = document.body;
-            const isL = b.getAttribute('data-theme') === 'light';
-            b.setAttribute('data-theme', isL ? 'dark' : 'light');
-            document.getElementById('tBtn').innerText = isL ? "Switch to Light" : "Switch to Dark";
-        }
-
-        function toggleSettings() { document.getElementById('settings').classList.toggle('set-open'); }
-        function showModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function hideModal(id) { document.getElementById(id).style.display = 'none'; }
-        function handleLogout() { auth.signOut(); toggleSettings(); }
-
-        async function confirmAction(type) {
-            if(!currentUser?.emailVerified && currentUser?.providerData[0]?.providerId === 'google.com') {
-                return alert("Verify your Gmail in your Google Settings first!");
-            }
-            if(prompt("Type 'DELETE' to confirm") === 'DELETE') {
-                // Delete logic here
-                alert("Operation successful.");
-            }
+                </div>`;
+            }).join('');
         }
     </script>
 </body>
