@@ -1,1096 +1,598 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Daily Echo | Your Personal Diary</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Daily Echo</title>
 
-    <style>
-        :root {
-            --primary: #6366f1;
-            --secondary: #8b5cf6;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --bg-dark: #020617;
-            --text-white: #f8fafc;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-        }
+<style>
+:root{
+--primary:#6366f1;
+--secondary:#8b5cf6;
+--bg:#020617;
+--card:rgba(255,255,255,0.04);
+--border:rgba(255,255,255,0.08);
+--text:#f8fafc;
+--muted:#94a3b8;
+--danger:#ef4444;
+--success:#10b981;
+}
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Inter,-apple-system,sans-serif;
+}
 
-        body {
-            margin: 0;
-            background: var(--bg-dark);
-            color: var(--text-white);
-            font-family: 'Inter', -apple-system, sans-serif;
-            overflow-x: hidden;
-        }
+body{
+background:var(--bg);
+color:var(--text);
+overflow-x:hidden;
+}
 
-        .bg-animate {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            background:
-                radial-gradient(circle at 0% 0%, #1e1b4b 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, #312e81 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
-            animation: pulseBg 10s infinite alternate;
-        }
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle at top left,#312e81 0%,transparent 35%),
+radial-gradient(circle at bottom right,#581c87 0%,transparent 35%),
+#020617;
+z-index:-1;
+}
 
-        @keyframes pulseBg {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.1); }
-        }
+nav{
+position:sticky;
+top:0;
+z-index:100;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:22px;
+background:rgba(2,6,23,.8);
+backdrop-filter:blur(20px);
+border-bottom:1px solid var(--border);
+}
 
-        nav {
-            padding: 20px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+.logo{
+font-size:1.8rem;
+font-weight:900;
+background:linear-gradient(45deg,#818cf8,#c084fc);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
 
-        .logo {
-            font-size: 1.6rem;
-            font-weight: 900;
-            letter-spacing: -1px;
-            background: linear-gradient(45deg, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+.nav-right{
+display:flex;
+gap:12px;
+align-items:center;
+}
 
-        .top-widget {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
+.top-btn{
+background:var(--card);
+border:1px solid var(--border);
+color:white;
+padding:12px 16px;
+border-radius:16px;
+cursor:pointer;
+font-weight:700;
+transition:.25s;
+}
 
-        .date-card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
-        }
+.top-btn:hover{
+transform:translateY(-2px);
+background:rgba(99,102,241,.12);
+}
 
-        .date-section h2 {
-            margin: 0;
-            font-size: 2rem;
-            font-weight: 800;
-        }
+.header-card{
+max-width:1200px;
+margin:30px auto;
+padding:30px;
+border:1px solid var(--border);
+background:var(--card);
+backdrop-filter:blur(20px);
+border-radius:32px;
+}
 
-        .date-section p {
-            margin: 5px 0 0 0;
-            color: #94a3b8;
-            font-size: 1rem;
-        }
+.header-card h1{
+font-size:2.4rem;
+margin-bottom:10px;
+}
 
-        .tabs {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 20px;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
+.header-card p{
+color:var(--muted);
+line-height:1.6;
+}
 
-        .tab {
-            padding: 12px 24px;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
-            user-select: none;
-        }
+.tabs{
+max-width:1200px;
+margin:20px auto;
+padding:0 20px;
+display:flex;
+gap:14px;
+flex-wrap:wrap;
+}
 
-        .tab.active {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
+.tab{
+padding:13px 24px;
+border-radius:18px;
+background:var(--card);
+border:1px solid var(--border);
+font-weight:700;
+cursor:pointer;
+transition:.25s;
+}
 
-        .tab:hover {
-            transform: translateY(-2px);
-        }
+.tab.active{
+background:var(--primary);
+border-color:var(--primary);
+}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 30px 20px;
-        }
+.container{
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-        }
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+gap:24px;
+}
 
-        .card {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 30px;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            animation: fadeIn 0.8s ease backwards;
-            position: relative;
-        }
+.card{
+position:relative;
+border-radius:28px;
+overflow:hidden;
+background:var(--card);
+border:1px solid var(--border);
+backdrop-filter:blur(16px);
+transition:.35s;
+}
 
-        .card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.05);
-        }
+.card:hover{
+transform:translateY(-8px);
+border-color:rgba(99,102,241,.5);
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+.card-header{
+padding:34px 24px;
+font-size:1.3rem;
+font-weight:800;
+min-height:120px;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+}
 
-        .card-header {
-            height: 130px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 25px;
-            text-align: center;
-            font-weight: 800;
-            font-size: 1.3rem;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            position: relative;
-        }
+.card-body{
+padding:24px;
+}
 
-        .card-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            padding: 6px 12px;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
+.card-date{
+font-size:.8rem;
+font-weight:800;
+color:#a5b4fc;
+margin-bottom:12px;
+display:block;
+text-transform:uppercase;
+}
 
-        .card-body {
-            padding: 25px;
-        }
+.card-desc{
+line-height:1.7;
+color:var(--muted);
+white-space:pre-wrap;
+word-break:break-word;
+}
 
-        .card-date {
-            color: var(--primary);
-            font-size: 0.8rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            display: block;
-        }
+.card-actions{
+display:flex;
+gap:10px;
+margin-top:18px;
+flex-wrap:wrap;
+}
 
-        .card-desc {
-            color: #94a3b8;
-            line-height: 1.6;
-            font-size: 1rem;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
+.small-btn{
+flex:1;
+padding:12px;
+border:none;
+border-radius:14px;
+font-weight:800;
+cursor:pointer;
+transition:.25s;
+}
 
-        .btn-row {
-            margin-top: 15px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+.edit-btn{
+background:rgba(59,130,246,.18);
+color:#93c5fd;
+}
 
-        .btn-small {
-            flex: 1;
-            min-width: 110px;
-            padding: 10px;
-            border-radius: 12px;
-            border: none;
-            font-weight: 700;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+.delete-btn{
+background:rgba(239,68,68,.18);
+color:#fca5a5;
+}
 
-        .btn-complete {
-            background: var(--success);
-            color: white;
-        }
+.restore-btn{
+background:rgba(16,185,129,.18);
+color:#6ee7b7;
+}
 
-        .btn-complete:hover {
-            filter: brightness(1.1);
-        }
+.permanent-btn{
+background:rgba(239,68,68,.25);
+color:#fecaca;
+}
 
-        .btn-restore {
-            background: var(--warning);
-            color: #111827;
-        }
+.small-btn:hover{
+transform:translateY(-2px);
+}
 
-        .btn-restore:hover {
-            filter: brightness(1.05);
-        }
+.fab{
+position:fixed;
+right:25px;
+bottom:25px;
+width:75px;
+height:75px;
+border:none;
+border-radius:24px;
+background:var(--primary);
+color:white;
+font-size:2rem;
+font-weight:900;
+cursor:pointer;
+box-shadow:0 20px 50px rgba(99,102,241,.4);
+transition:.3s;
+}
 
-        .delete-btn {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            width: 35px;
-            height: 35px;
-            border-radius: 12px;
-            background: rgba(239, 68, 68, 0.2);
-            border: none;
-            color: #f87171;
-            cursor: pointer;
-            font-size: 18px;
-            opacity: 0;
-            transition: 0.3s;
-            z-index: 2;
-        }
+.fab:hover{
+transform:rotate(90deg) scale(1.06);
+}
 
-        .card:hover .delete-btn {
-            opacity: 1;
-        }
+.overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.7);
+backdrop-filter:blur(8px);
+display:none;
+align-items:center;
+justify-content:center;
+padding:20px;
+z-index:999;
+}
 
-        .delete-btn:hover {
-            background: rgba(239, 68, 68, 0.4);
-        }
+.overlay.show{
+display:flex;
+}
 
-        .edit-btn {
-            position: absolute;
-            top: 15px;
-            left: 60px;
-            width: 35px;
-            height: 35px;
-            border-radius: 12px;
-            background: rgba(59, 130, 246, 0.2);
-            border: none;
-            color: #60a5fa;
-            cursor: pointer;
-            opacity: 0;
-            transition: 0.3s;
-            z-index: 2;
-        }
+.modal{
+width:100%;
+max-width:600px;
+background:#0f172a;
+border:1px solid var(--border);
+border-radius:32px;
+padding:30px;
+animation:popup .25s ease;
+}
 
-        .card:hover .edit-btn {
-            opacity: 1;
-        }
+@keyframes popup{
+from{opacity:0;transform:scale(.9)}
+to{opacity:1;transform:scale(1)}
+}
 
-        .edit-btn:hover {
-            background: rgba(59, 130, 246, 0.4);
-        }
+.modal h2{
+margin-bottom:20px;
+}
 
-        .lock-btn {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 14px;
-            background: rgba(255,255,255,0.07);
-            color: #e2e8f0;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.25s;
-        }
+input,textarea,select{
+width:100%;
+margin-bottom:16px;
+padding:16px;
+border-radius:18px;
+border:1px solid var(--border);
+background:#111827;
+color:white;
+font-size:1rem;
+outline:none;
+}
 
-        .lock-btn:hover {
-            background: rgba(255,255,255,0.12);
-        }
+textarea{
+resize:none;
+}
 
-        .overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(8px);
-            display: none;
-            align-items: flex-end;
-            z-index: 1000;
-        }
+.main-btn{
+width:100%;
+padding:16px;
+border:none;
+border-radius:18px;
+background:var(--primary);
+color:white;
+font-weight:800;
+font-size:1rem;
+cursor:pointer;
+}
 
-        .overlay.show {
-            display: flex;
-        }
+.empty{
+grid-column:1/-1;
+padding:80px 20px;
+text-align:center;
+color:var(--muted);
+}
 
-        .modal {
-            background: #0f172a;
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            border-radius: 40px 40px 0 0;
-            padding: 40px 30px;
-            transform: translateY(100%);
-            transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            max-height: 85vh;
-            overflow-y: auto;
-        }
+.empty h2{
+margin-bottom:10px;
+}
 
-        .modal.active {
-            transform: translateY(0);
-        }
+@media(max-width:700px){
+.header-card h1{
+font-size:1.8rem;
+}
 
-        input, textarea, select {
-            width: 100%;
-            background: #1e293b;
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 18px;
-            color: white;
-            font-size: 1rem;
-            margin-bottom: 15px;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 18px;
-            border-radius: 20px;
-            border: none;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .btn-main {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-main:hover {
-            transform: scale(1.02);
-            filter: brightness(1.1);
-        }
-
-        .fab {
-            position: fixed;
-            bottom: 40px;
-            right: 30px;
-            width: 75px;
-            height: 75px;
-            border-radius: 24px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            font-size: 30px;
-            cursor: pointer;
-            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.5);
-            transition: 0.3s;
-            z-index: 99;
-        }
-
-        .fab:hover {
-            transform: rotate(90deg) scale(1.08);
-        }
-
-        .empty-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            color: #64748b;
-        }
-
-        .empty-state .icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-        }
-
-        .private-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 10px;
-            margin-bottom: 12px;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.07);
-            color: #cbd5e1;
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .tabs {
-                gap: 10px;
-            }
-
-            .weather-card,
-            .date-card {
-                padding: 24px;
-            }
-
-            .fab {
-                right: 18px;
-                bottom: 18px;
-            }
-        }
-    </style>
+.grid{
+grid-template-columns:1fr;
+}
+}
+</style>
 </head>
 <body>
-    <div class="bg-animate"></div>
-
-    <nav>
-        <div class="logo">DailyECHO</div>
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <span id="storageInfo" style="font-size: 0.85rem; color: #94a3b8;"></span>
-            <button onclick="exportData()" style="background:none; border:none; font-size: 24px; cursor:pointer;" title="Export Data">💾</button>
-        </div>
-    </nav>
-
-    <div class="top-widget">
-        <div class="date-card">
-            <div class="date-section">
-                <h2 id="currentDate">Loading...</h2>
-                <p id="currentDay">...</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="tabs">
-        <div class="tab active" onclick="switchTab('moments', event)">✨ Special Moments</div>
-        <div class="tab" onclick="switchTab('notes', event)">📝 Notes</div>
-        <div class="tab" onclick="switchTab('deleted', event)">🗑️ Recently Deleted</div>
-    </div>
-
-    <div class="container">
-        <div class="grid" id="mainGrid"></div>
-    </div>
-
-    <button class="fab" onclick="openAddSheet()">+</button>
-
-    <div class="overlay" id="addSheet" onclick="closeSheet(event, 'addSheet')">
-        <div class="modal" onclick="event.stopPropagation()">
-            <h1 style="margin-top:0" id="modalTitle">New Entry</h1>
-
-            <select id="entryType">
-                <option value="moment">✨ Special Moment</option>
-                <option value="note">📝 Note</option>
-            </select>
-
-            <input type="text" id="title" placeholder="Title (Max 45 characters)" maxlength="45" />
-            <input type="date" id="date" />
-            <textarea id="desc" rows="5" placeholder="Description..."></textarea>
-
-            <label style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
-                <input type="checkbox" id="isPrivate" style="width:auto;" />
-                🔒 Private Entry
-            </label>
-
-            <button class="btn btn-main" onclick="saveEntry()">Save Locally</button>
-        </div>
-    </div>
-
-    <script>
-        let currentTab = 'moments';
-        let sessionPassword = null;
-        let editingEntryId = null;
-        const unlockedPrivateIds = new Set();
-
-        const gradients = [
-            'linear-gradient(135deg, #6366f1, #a855f7)',
-            'linear-gradient(135deg, #3b82f6, #2dd4bf)',
-            'linear-gradient(135deg, #f43f5e, #fb923c)',
-            'linear-gradient(135deg, #10b981, #3b82f6)',
-            'linear-gradient(135deg, #f59e0b, #ef4444)',
-            'linear-gradient(135deg, #8b5cf6, #ec4899)'
-        ];
-
-        const encoder = new TextEncoder();
-        const decoder = new TextDecoder();
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            updateDateTime();
-            setInterval(updateDateTime, 60000);
-            setTodayDate();
-            await initializePasswordIfNeeded();
-            cleanDeletedEntries();
-            updateStorageInfo();
-            await loadData();
-        });
-
-        function getTodayLocalISO() {
-            const now = new Date();
-            const tzOffset = now.getTimezoneOffset() * 60000;
-            return new Date(now.getTime() - tzOffset).toISOString().split('T')[0];
-        }
-
-        function updateDateTime() {
-            const now = new Date();
-            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric'
-            });
-            document.getElementById('currentDay').textContent = now.toLocaleDateString('en-US', {
-                weekday: 'long'
-            });
-        }
-
-        function setTodayDate() {
-            document.getElementById('date').value = getTodayLocalISO();
-        }
-
-        async function sha256Hex(text) {
-            const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(text));
-            return [...new Uint8Array(hashBuffer)]
-                .map(b => b.toString(16).padStart(2, '0'))
-                .join('');
-        }
-
-        async function initializePasswordIfNeeded() {
-            const storedHash = localStorage.getItem('echoPasswordHash');
-            if (!storedHash) {
-                while (true) {
-                    const pass = prompt('Create a password for private entries:');
-                    if (pass === null) {
-                        alert('Password is required to use private entries.');
-                        continue;
-                    }
-                    if (pass.trim().length < 4) {
-                        alert('Password must be at least 4 characters.');
-                        continue;
-                    }
-                    localStorage.setItem('echoPasswordHash', await sha256Hex(pass));
-                    sessionPassword = pass;
-                    alert('Password created successfully.');
-                    break;
-                }
-            }
-        }
-
-        async function verifyPassword() {
-            const storedHash = localStorage.getItem('echoPasswordHash');
-            if (!storedHash) return null;
-
-            if (sessionPassword && (await sha256Hex(sessionPassword)) === storedHash) {
-                return sessionPassword;
-            }
-
-            const pass = prompt('Enter password:');
-            if (pass === null) return null;
-
-            const hash = await sha256Hex(pass);
-            if (hash !== storedHash) {
-                alert('Wrong password.');
-                return null;
-            }
-
-            sessionPassword = pass;
-            return pass;
-        }
-
-        async function encryptText(text, password) {
-            const salt = crypto.getRandomValues(new Uint8Array(16));
-            const iv = crypto.getRandomValues(new Uint8Array(12));
-
-            const baseKey = await crypto.subtle.importKey(
-                'raw',
-                encoder.encode(password),
-                'PBKDF2',
-                false,
-                ['deriveKey']
-            );
-
-            const key = await crypto.subtle.deriveKey(
-                {
-                    name: 'PBKDF2',
-                    salt,
-                    iterations: 100000,
-                    hash: 'SHA-256'
-                },
-                baseKey,
-                { name: 'AES-GCM', length: 256 },
-                false,
-                ['encrypt']
-            );
-
-            const cipherBuffer = await crypto.subtle.encrypt(
-                { name: 'AES-GCM', iv },
-                key,
-                encoder.encode(text)
-            );
-
-            return {
-                salt: arrayBufferToBase64(salt),
-                iv: arrayBufferToBase64(iv),
-                data: arrayBufferToBase64(new Uint8Array(cipherBuffer))
-            };
-        }
-
-        async function decryptText(bundle, password) {
-            const salt = base64ToUint8Array(bundle.salt);
-            const iv = base64ToUint8Array(bundle.iv);
-            const data = base64ToUint8Array(bundle.data);
-
-            const baseKey = await crypto.subtle.importKey(
-                'raw',
-                encoder.encode(password),
-                'PBKDF2',
-                false,
-                ['deriveKey']
-            );
-
-            const key = await crypto.subtle.deriveKey(
-                {
-                    name: 'PBKDF2',
-                    salt,
-                    iterations: 100000,
-                    hash: 'SHA-256'
-                },
-                baseKey,
-                { name: 'AES-GCM', length: 256 },
-                false,
-                ['decrypt']
-            );
-
-            const plainBuffer = await crypto.subtle.decrypt(
-                { name: 'AES-GCM', iv },
-                key,
-                data
-            );
-
-            return decoder.decode(plainBuffer);
-        }
-
-        function arrayBufferToBase64(arr) {
-            let binary = '';
-            const bytes = arr instanceof Uint8Array ? arr : new Uint8Array(arr);
-            for (let i = 0; i < bytes.length; i++) {
-                binary += String.fromCharCode(bytes[i]);
-            }
-            return btoa(binary);
-        }
-
-        function base64ToUint8Array(base64) {
-            const binary = atob(base64);
-            const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) {
-                bytes[i] = binary.charCodeAt(i);
-            }
-            return bytes;
-        }
-
-        function switchTab(tab, event) {
-            currentTab = tab;
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            loadData();
-        }
-
-        function openAddSheet() {
-            const overlay = document.getElementById('addSheet');
-            const modal = overlay.querySelector('.modal');
-
-            editingEntryId = null;
-            document.getElementById('modalTitle').textContent = 'New Entry';
-            document.getElementById('entryType').value = currentTab === 'notes' ? 'note' : 'moment';
-            document.getElementById('title').value = '';
-            document.getElementById('desc').value = '';
-            document.getElementById('isPrivate').checked = false;
-            setTodayDate();
-
-            overlay.classList.add('show');
-            setTimeout(() => modal.classList.add('active'), 10);
-        }
-
-        function closeSheet(event, sheetId) {
-            if (event.target.classList.contains('overlay')) {
-                const overlay = document.getElementById(sheetId);
-                const modal = overlay.querySelector('.modal');
-                modal.classList.remove('active');
-                setTimeout(() => overlay.classList.remove('show'), 400);
-            }
-        }
-
-        async function saveEntry() {
-            const title = document.getElementById('title').value.trim();
-            const date = document.getElementById('date').value;
-            const desc = document.getElementById('desc').value.trim();
-            const type = document.getElementById('entryType').value;
-            const isPrivate = document.getElementById('isPrivate').checked;
-
-            if (!title || !date || !desc) {
-                alert('Please fill all fields.');
-                return;
-            }
-
-            let data = JSON.parse(localStorage.getItem('echoData') || '[]');
-
-            if (editingEntryId) {
-                const entryIndex = data.findIndex(item => item.id === editingEntryId);
-                if (entryIndex === -1) return;
-
-                const existing = data[entryIndex];
-                const entry = {
-                    ...existing,
-                    title,
-                    date,
-                    desc,
-                    type,
-                    private: isPrivate,
-                    color: existing.color || gradients[Math.floor(Math.random() * gradients.length)],
-                    created: existing.created || new Date().toISOString(),
-                    completed: existing.completed || false
-                };
-
-                if (isPrivate) {
-                    const password = await verifyPassword();
-                    if (!password) return;
-
-                    entry.private = true;
-                    entry.encryptedTitle = await encryptText(title, password);
-                    entry.encryptedDesc = await encryptText(desc, password);
-                    entry.title = 'Private Entry';
-                    entry.desc = '';
-                } else {
-                    delete entry.encryptedTitle;
-                    delete entry.encryptedDesc;
-                    entry.title = title;
-                    entry.desc = desc;
-                }
-
-                data[entryIndex] = entry;
-                localStorage.setItem('echoData', JSON.stringify(data));
-                closeAddSheet();
-                await loadData();
-                updateStorageInfo();
-                return;
-            }
-
-            const entry = {
-                id: Date.now(),
-                title: isPrivate ? 'Private Entry' : title,
-                date,
-                desc: isPrivate ? '' : desc,
-                type,
-                color: gradients[Math.floor(Math.random() * gradients.length)],
-                created: new Date().toISOString(),
-                completed: false,
-                private: isPrivate
-            };
-
-            if (isPrivate) {
-                const password = await verifyPassword();
-                if (!password) return;
-
-                entry.encryptedTitle = await encryptText(title, password);
-                entry.encryptedDesc = await encryptText(desc, password);
-            }
-
-            data.push(entry);
-            localStorage.setItem('echoData', JSON.stringify(data));
-
-            closeAddSheet();
-            await loadData();
-            updateStorageInfo();
-        }
-
-        function closeAddSheet() {
-            const overlay = document.getElementById('addSheet');
-            const modal = overlay.querySelector('.modal');
-            modal.classList.remove('active');
-            setTimeout(() => overlay.classList.remove('show'), 400);
-        }
-
-        async function loadData() {
-            cleanDeletedEntries();
-            const grid = document.getElementById('mainGrid');
-            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
-            const deleted = JSON.parse(localStorage.getItem('recentlyDeleted') || '[]');
-
-            let filtered = [];
-            if (currentTab === 'deleted') {
-                filtered = deleted.slice().sort((a, b) => new Date(b.deletedAt) - new Date(a.deletedAt));
-            } else {
-                filtered = data
-                    .filter(item => item.type === currentTab.slice(0, -1))
-                    .sort((a, b) => new Date(b.created) - new Date(a.created));
-            }
-
-            if (filtered.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <div class="icon">📝</div>
-                        <h3>No entries yet</h3>
-                        <p>${currentTab === 'deleted' ? 'Nothing in Recently Deleted.' : 'Click the + button to add your first entry.'}</p>
-                    </div>
-                `;
-                updateStorageInfo();
-                return;
-            }
-
-            const rendered = await Promise.all(filtered.map(item => renderCard(item)));
-            grid.innerHTML = rendered.join('');
-            updateStorageInfo();
-        }
-
-        async function renderCard(item) {
-            const badge = item.type === 'moment' ? '✨' : '📝';
-
-            if (currentTab === 'deleted') {
-                const title = item.private ? '🔒 Private Entry' : escapeHtml(item.title || 'Untitled');
-                const dateText = item.date || 'Unknown date';
-
-                return `
-                    <div class="card">
-                        <div class="card-header" style="background: ${item.color || gradients[0]}">
-                            <span class="card-badge">${badge}</span>
-                            ${title}
-                        </div>
-                        <div class="card-body">
-                            <span class="card-date">Deleted: ${formatDateTime(item.deletedAt)}</span>
-                            <p class="card-desc">${item.private ? 'This item is locked.' : escapeHtml(item.desc || '')}</p>
-                            <div class="btn-row">
-                                <button class="btn-small btn-restore" onclick="restoreEntry(${item.id}, event)">♻ Restore</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            let title = item.title || 'Untitled';
-            let desc = item.desc || '';
-
-            if (item.private) {
-                if (unlockedPrivateIds.has(item.id)) {
-                    const password = sessionPassword || await verifyPassword();
-                    if (password) {
-                        try {
-                            title = await decryptText(item.encryptedTitle, password);
-                            desc = await decryptText(item.encryptedDesc, password);
-                        } catch (e) {
-                            title = 'Locked Entry';
-                            desc = 'Unable to decrypt. Check password.';
-                        }
-                    } else {
-                        title = 'Locked Entry';
-                        desc = 'Password required.';
-                    }
-                } else {
-                    title = '🔒 Private Entry';
-                    desc = 'Tap unlock to view this entry.';
-                }
-            }
-
-            return `
-                <div class="card">
-                    <button class="delete-btn" onclick="deleteEntry(${item.id}, event)">×</button>
-                    <button class="edit-btn" onclick="renameEntry(${item.id}, event)">✏️</button>
-
-                    <div class="card-header" style="background: ${item.color || gradients[0]}">
-                        <span class="card-badge">${badge}</span>
-                        ${escapeHtml(title)}
-                    </div>
-
-                    <div class="card-body">
-                        <span class="card-date">${item.date}</span>
-
-                        ${item.private ? `
-                            <div class="private-pill">🔒 Private</div>
-                            ${unlockedPrivateIds.has(item.id) ? `
-                                <p class="card-desc">${escapeHtml(desc)}</p>
-                            ` : `
-                                <button class="lock-btn" onclick="unlockEntry(${item.id}, event)">Unlock</button>
-                            `}
-                        ` : `
-                            <p class="card-desc">${escapeHtml(desc)}</p>
-                        `}
-                    </div>
-                </div>
-            `;
-        }
-
-        function escapeHtml(str) {
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
-        function formatDateTime(ms) {
-            try {
-                return new Date(ms).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric'
-                });
-            } catch {
-                return 'Unknown';
-            }
-        }
-
-        function completeTarget() {
-            return;
-        }
-
-        async function unlockEntry(id, event) {
-            event.stopPropagation();
-
-            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
-            const entry = data.find(item => item.id === id);
-            if (!entry || !entry.private) return;
-
-            const password = await verifyPassword();
-            if (!password) return;
-
-            try {
-                await decryptText(entry.encryptedTitle, password);
-                await decryptText(entry.encryptedDesc, password);
-                unlockedPrivateIds.add(id);
-                await loadData();
-            } catch (e) {
-                alert('Wrong password.');
-            }
-        }
-
-        async function renameEntry(id, event) {
-            event.stopPropagation();
-
-            if (currentTab === 'deleted') {
-                alert('Restore the entry first to rename it.');
-                return;
-            }
-
-            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
-            const entry = data.find(item => item.id === id);
-            if (!entry) return;
-
-            let currentTitle = entry.title || 'Untitled';
-
-            if (entry.private) {
-                const password = await verifyPassword();
-                if (!password) return;
-                try {
-                    currentTitle = await decryptText(entry.encryptedTitle, password);
-                } catch {
-                    alert('Wrong password.');
-                    return;
-                }
-            }
-
-            const newTitle = prompt('Rename entry title:', currentTitle);
-            if (!newTitle || !newTitle.trim()) return;
-
-            const cleanTitle = newTitle.trim();
-
-            if (entry.private) {
-                const password = await verifyPassword();
-                if (!password) return;
-
-                entry.encryptedTitle = await encryptText(cleanTitle, password);
-                entry.title = 'Private Entry';
-                unlockedPrivateIds.add(id);
-            } else {
-                entry.title = cleanTitle;
-            }
-
-            localStorage.setItem('echoData', JSON.stringify(data));
-            await loadData();
-        }
-
-        function deleteEntry(id, event) {
-            event.stopPropagation();
-
-            if (!confirm('Move this entry to Recently Deleted?')) return;
-
-            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
-            const deleted = JSON.parse(localStorage.getItem('recentlyDeleted') || '[]');
-
-            const entry = data.find(item => item.id === id);
-            if (!entry) return;
-
-            entry.deletedAt = Date.now();
-            deleted.push(entry);
-
-            const filtered = data.filter(item => item.id !== id);
-
-            localStorage.setItem('echoData', JSON.stringify(filtered));
-            localStorage.setItem('recentlyDeleted', JSON.stringify(deleted));
-
-            unlockedPrivateIds.delete(id);
-            loadData();
-            updateStorageInfo();
-        }
-
-        function restoreEntry(id, event) {
-            event.stopPropagation();
-
-            const deleted = JSON.parse(localStorage.getItem('recentlyDeleted') || '[]');
-            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
-
-            const entry = deleted.find(item => item.id === id);
-            if (!entry) return;
-
-            delete entry.deletedAt;
-            data.push(entry);
-
-            const filteredDeleted = deleted.filter(item => item.id !== id);
-
-            localStorage.setItem('echoData', JSON.stringify(data));
-            localStorage.setItem('recentlyDeleted', JSON.stringify(filteredDeleted));
-
-            loadData();
-            updateStorageInfo();
-        }
-
-        function cleanDeletedEntries() {
-            const deleted = JSON.parse(localStorage.getItem('recentlyDeleted') || '[]');
-            const now = Date.now();
-
-            const valid = deleted.filter(item => {
-                if (!item.deletedAt) return false;
-                return now - item.deletedAt < 15 * 24 * 60 * 60 * 1000;
-            });
-
-            if (valid.length !== deleted.length) {
-                localStorage.setItem('recentlyDeleted', JSON.stringify(valid));
-            }
-        }
-
-        function updateStorageInfo() {
-            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
-            const deleted = JSON.parse(localStorage.getItem('recentlyDeleted') || '[]');
-            document.getElementById('storageInfo').textContent = `${data.length} entries • ${deleted.length} deleted`;
-        }
-
-        function exportData() {
-            const payload = {
-                echoData: JSON.parse(localStorage.getItem('echoData') || '[]'),
-                recentlyDeleted: JSON.parse(localStorage.getItem('recentlyDeleted') || '[]'),
-                echoPasswordHash: localStorage.getItem('echoPasswordHash') || null,
-                exportedAt: new Date().toISOString()
-            };
-
-            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `echo-backup-${getTodayLocalISO()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            alert('Data exported successfully!');
-        }
-    </script>
+
+<nav>
+<div class="logo">DailyECHO</div>
+
+<div class="nav-right">
+<button class="top-btn" onclick="exportData()">Export</button>
+<button class="top-btn" onclick="deleteAllData()">Delete All</button>
+</div>
+</nav>
+
+<div class="header-card">
+<h1>Your Private Space</h1>
+<p>Save memories, thoughts, notes, late-night ideas, and important moments — all stored locally inside your browser.</p>
+</div>
+
+<div class="tabs">
+<div class="tab active" onclick="switchTab('moments',event)">✨ Moments</div>
+<div class="tab" onclick="switchTab('notes',event)">📝 Notes</div>
+<div class="tab" onclick="switchTab('deleted',event)">🗑 Recently Deleted</div>
+</div>
+
+<div class="container">
+<div class="grid" id="grid"></div>
+</div>
+
+<button class="fab" onclick="openModal()">+</button>
+
+<div class="overlay" id="entryOverlay">
+<div class="modal">
+<h2 id="modalTitle">New Entry</h2>
+
+<select id="entryType">
+<option value="moment">✨ Moment</option>
+<option value="note">📝 Note</option>
+</select>
+
+<input type="text" id="title" maxlength="45" placeholder="Title">
+<input type="date" id="date">
+<textarea rows="6" id="desc" placeholder="Write something..."></textarea>
+
+<button class="main-btn" onclick="saveEntry()">Save Entry</button>
+</div>
+</div>
+
+<script>
+let currentTab='moments';
+let editId=null;
+
+const gradients=[
+'linear-gradient(135deg,#6366f1,#8b5cf6)',
+'linear-gradient(135deg,#ec4899,#8b5cf6)',
+'linear-gradient(135deg,#3b82f6,#06b6d4)',
+'linear-gradient(135deg,#10b981,#14b8a6)',
+'linear-gradient(135deg,#f59e0b,#ef4444)'
+];
+
+window.onload=()=>{
+setToday();
+loadData();
+};
+
+function setToday(){
+document.getElementById('date').value=new Date().toISOString().split('T')[0];
+}
+
+function switchTab(tab,event){
+currentTab=tab;
+document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+event.target.classList.add('active');
+loadData();
+}
+
+function openModal(){
+editId=null;
+document.getElementById('modalTitle').innerText='New Entry';
+document.getElementById('title').value='';
+document.getElementById('desc').value='';
+setToday();
+document.getElementById('entryOverlay').classList.add('show');
+}
+
+window.onclick=e=>{
+if(e.target.id==='entryOverlay'){
+document.getElementById('entryOverlay').classList.remove('show');
+}
+}
+
+function getData(){
+return JSON.parse(localStorage.getItem('echoData')||'[]');
+}
+
+function getDeleted(){
+return JSON.parse(localStorage.getItem('echoDeleted')||'[]');
+}
+
+function saveMain(data){
+localStorage.setItem('echoData',JSON.stringify(data));
+}
+
+function saveDeleted(data){
+localStorage.setItem('echoDeleted',JSON.stringify(data));
+}
+
+function saveEntry(){
+const title=document.getElementById('title').value.trim();
+const desc=document.getElementById('desc').value.trim();
+const date=document.getElementById('date').value;
+const type=document.getElementById('entryType').value;
+
+if(!title||!desc||!date){
+alert('Fill all fields');
+return;
+}
+
+let data=getData();
+
+if(editId){
+const item=data.find(x=>x.id===editId);
+item.title=title;
+item.desc=desc;
+item.date=date;
+item.type=type;
+}else{
+data.push({
+id:Date.now(),
+title,
+desc,
+date,
+type,
+created:Date.now(),
+color:gradients[Math.floor(Math.random()*gradients.length)]
+});
+}
+
+saveMain(data);
+document.getElementById('entryOverlay').classList.remove('show');
+loadData();
+}
+
+function loadData(){
+const grid=document.getElementById('grid');
+
+let data=currentTab==='deleted'
+?getDeleted()
+:getData().filter(x=>x.type===currentTab.slice(0,-1));
+
+if(data.length===0){
+grid.innerHTML=`
+<div class="empty">
+<h2>No entries found</h2>
+<p>Create your first entry using the + button.</p>
+</div>`;
+return;
+}
+
+grid.innerHTML=data.reverse().map(item=>`
+<div class="card">
+<div class="card-header" style="background:${item.color}">
+${item.title}
+</div>
+
+<div class="card-body">
+<span class="card-date">${item.date}</span>
+<p class="card-desc">${item.desc}</p>
+
+<div class="card-actions">
+${currentTab!=='deleted'?
+`<button class="small-btn edit-btn" onclick="editEntry(${item.id})">Edit</button>
+<button class="small-btn delete-btn" onclick="deleteEntry(${item.id})">Delete</button>`
+:
+`<button class="small-btn restore-btn" onclick="restoreEntry(${item.id})">Restore</button>
+<button class="small-btn permanent-btn" onclick="permanentDelete(${item.id})">Delete Forever</button>`}
+</div>
+</div>
+</div>`).join('');
+}
+
+function editEntry(id){
+const item=getData().find(x=>x.id===id);
+if(!item)return;
+
+editId=id;
+document.getElementById('modalTitle').innerText='Edit Entry';
+document.getElementById('title').value=item.title;
+document.getElementById('desc').value=item.desc;
+document.getElementById('date').value=item.date;
+document.getElementById('entryType').value=item.type;
+
+document.getElementById('entryOverlay').classList.add('show');
+}
+
+function deleteEntry(id){
+let data=getData();
+let deleted=getDeleted();
+
+const item=data.find(x=>x.id===id);
+if(!item)return;
+
+item.deletedAt=Date.now();
+deleted.push(item);
+
+data=data.filter(x=>x.id!==id);
+
+saveMain(data);
+saveDeleted(deleted);
+loadData();
+}
+
+function restoreEntry(id){
+let data=getData();
+let deleted=getDeleted();
+
+const item=deleted.find(x=>x.id===id);
+if(!item)return;
+
+delete item.deletedAt;
+data.push(item);
+
+deleted=deleted.filter(x=>x.id!==id);
+
+saveMain(data);
+saveDeleted(deleted);
+loadData();
+}
+
+function permanentDelete(id){
+let deleted=getDeleted();
+deleted=deleted.filter(x=>x.id!==id);
+saveDeleted(deleted);
+loadData();
+}
+
+function deleteAllData(){
+if(confirm('Delete ALL data permanently?')){
+localStorage.removeItem('echoData');
+localStorage.removeItem('echoDeleted');
+loadData();
+}
+}
+
+function exportData(){
+const payload={
+data:getData(),
+deleted:getDeleted(),
+exported:new Date().toISOString()
+};
+
+const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+const url=URL.createObjectURL(blob);
+
+const a=document.createElement('a');
+a.href=url;
+a.download='daily-echo-backup.json';
+a.click();
+
+URL.revokeObjectURL(url);
+}
+</script>
+
 </body>
 </html>
