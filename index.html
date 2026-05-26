@@ -3,107 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Echo | Next-Gen Diary</title>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <title>Daily Echo | Your Personal Diary</title> 
+     <link rel="stylesheet" href="assets/Index.css">
     
-    <style>
-        :root {
-            --primary: #6366f1;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --bg-dark: #020617;
-            --text-white: #f8fafc;
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            margin: 0; background: var(--bg-dark); color: var(--text-white);
-            font-family: 'Inter', -apple-system, sans-serif; overflow-x: hidden;
-        }
-
-        /* Dynamic Mesh Background */
-        .bg-animate {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 0% 0%, #1e1b4b 0%, transparent 50%),
-                        radial-gradient(circle at 100% 100%, #312e81 0%, transparent 50%),
-                        radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
-            animation: pulseBg 10s infinite alternate;
-        }
-        @keyframes pulseBg { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
-
-        /* Header */
-        nav {
-            height: 70px; padding: 0 25px; display: flex; justify-content: space-between;
-            align-items: center; background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border);
-            position: sticky; top: 0; z-index: 100;
-        }
-        .logo { font-size: 1.6rem; font-weight: 900; letter-spacing: -1px; background: linear-gradient(45deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        /* Grid */
-        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
-
-        /* Glass Card */
-        .card {
-            background: var(--glass); border: 1px solid var(--glass-border);
-            border-radius: 30px; overflow: hidden; backdrop-filter: blur(10px);
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            animation: fadeIn 0.8s ease backwards;
-        }
-        .card:hover { transform: translateY(-10px) scale(1.02); border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        .card-header {
-            height: 130px; display: flex; align-items: center; justify-content: center;
-            padding: 25px; text-align: center; font-weight: 800; font-size: 1.3rem;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        .card-body { padding: 25px; }
-        .card-date { color: var(--primary); font-size: 0.8rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; display: block; }
-        .card-desc { color: #94a3b8; line-height: 1.6; font-size: 1rem; }
-
-        /* Interactive Bottom Sheets (Modals) */
-        .overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(8px); display: none; align-items: flex-end; z-index: 1000;
-        }
-        .modal {
-            background: #0f172a; width: 100%; max-width: 600px; margin: 0 auto;
-            border-radius: 40px 40px 0 0; padding: 40px 30px;
-            transform: translateY(100%); transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .modal.active { transform: translateY(0); }
-
-        /* Inputs & Buttons */
-        input, textarea {
-            width: 100%; background: #1e293b; border: 1px solid var(--glass-border);
-            border-radius: 20px; padding: 18px; color: white; font-size: 1rem;
-            margin-bottom: 15px; outline: none; transition: 0.3s;
-        }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2); }
-
-        .btn {
-            width: 100%; padding: 18px; border-radius: 20px; border: none;
-            font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.3s;
-        }
-        .btn-main { background: var(--primary); color: white; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4); }
-        .btn-main:hover { transform: scale(1.02); filter: brightness(1.1); }
-        .btn-google { background: white; color: #000; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-
-        .fab {
-            position: fixed; bottom: 40px; right: 30px; width: 75px; height: 75px;
-            border-radius: 24px; background: var(--primary); color: white; border: none;
-            font-size: 35px; cursor: pointer; box-shadow: 0 20px 40px rgba(99, 102, 241, 0.5);
-            transition: 0.3s;
-        }
-        .fab:hover { transform: rotate(90deg) scale(1.1); }
-    </style>
+    
 </head>
 <body>
 
@@ -111,108 +14,58 @@
 
     <nav>
         <div class="logo">ECHO</div>
-        <button onclick="toggleSheet('settingsSheet')" style="background:none; border:none; font-size: 24px; cursor:pointer;">🔮</button>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <span id="storageInfo" style="font-size: 0.85rem; color: #94a3b8;"></span>
+            <button onclick="exportData()" style="background:none; border:none; font-size: 24px; cursor:pointer;" title="Export Data">💾</button>
+        </div>
     </nav>
+
+    <div class="top-widget">
+        <div class="weather-card">
+            <div class="date-section">
+                <h2 id="currentDate">Loading...</h2>
+                <p id="currentDay">...</p>
+            </div>
+            <div class="weather-section">
+                <div class="weather-temp" id="weatherTemp">--°</div>
+                <div class="weather-desc" id="weatherDesc">Loading weather...</div>
+                <div class="weather-location" id="weatherLocation">📍 Detecting location...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('targets')">🎯 Daily Targets</div>
+        <div class="tab" onclick="switchTab('moments')">✨ Special Moments</div>
+        <div class="tab" onclick="switchTab('notes')">📝 Notes</div>
+    </div>
 
     <div class="container">
         <div class="grid" id="mainGrid"></div>
     </div>
 
-    <button class="fab" onclick="toggleSheet('entrySheet')">+</button>
+    <button class="fab" onclick="openAddSheet()">+</button>
 
-    <div class="overlay" id="entrySheet" onclick="toggleSheet('entrySheet')">
+    <!-- Add Entry Sheet -->
+    <div class="overlay" id="addSheet" onclick="toggleSheet('addSheet')">
         <div class="modal" onclick="event.stopPropagation()">
-            <h1 style="margin-top:0">New Memory</h1>
-            <input type="text" id="title" placeholder="Entry Title (Max 45)" maxlength="45">
+            <h1 style="margin-top:0" id="modalTitle">New Entry</h1>
+            
+            <select id="entryType">
+                <option value="target">🎯 Daily Target</option>
+                <option value="moment">✨ Special Moment</option>
+                <option value="note">📝 Note</option>
+            </select>
+
+            <input type="text" id="title" placeholder="Title (Max 45 characters)" maxlength="45">
             <input type="date" id="date">
-            <textarea id="desc" rows="5" placeholder="Deep thoughts..."></textarea>
-            <button class="btn btn-main" onclick="checkAuthAndSave()">Save to Cloud</button>
+            <textarea id="desc" rows="5" placeholder="Description..."></textarea>
+            
+            <button class="btn btn-main" onclick="saveEntry()">Save Locally</button>
         </div>
     </div>
 
-    <div class="overlay" id="authSheet" onclick="toggleSheet('authSheet')">
-        <div class="modal" onclick="event.stopPropagation()" style="text-align: center;">
-            <div style="font-size: 50px; margin-bottom: 20px;">🛡️</div>
-            <h2>Secure Your Memories</h2>
-            <p style="color: #94a3b8; margin-bottom: 30px;">Login to sync your diary across all your devices.</p>
-            <button class="btn btn-google" onclick="login('google')">Sign in with Google</button>
-            <input type="text" id="phone" placeholder="+91 00000 00000" style="margin-top:20px; text-align: center;">
-            <button class="btn btn-main" onclick="login('phone')">Continue with Phone</button>
-        </div>
-    </div>
+    <script type="module" src="assets/Index.js"></script>
 
-    <script>
-     // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDJANDEn9IdMFNEvKClOofHTmX64IsSyqw",
-  authDomain: "dailymemo-92398.firebaseapp.com",
-  projectId: "dailymemo-92398",
-  storageBucket: "dailymemo-92398.firebasestorage.app",
-  messagingSenderId: "707078957755",
-  appId: "1:707078957755:web:5027f3cac6a4590059579e",
-  measurementId: "G-21EY99C4ZK"
-};
-
-        let user = null;
-        const gradients = [
-            'linear-gradient(135deg, #6366f1, #a855f7)',
-            'linear-gradient(135deg, #3b82f6, #2dd4bf)',
-            'linear-gradient(135deg, #f43f5e, #fb923c)'
-        ];
-
-        auth.onAuthStateChanged(u => { user = u; loadData(); });
-
-        function toggleSheet(id) {
-            const el = document.getElementById(id);
-            const modal = el.querySelector('.modal');
-            if (el.style.display === 'flex') {
-                modal.classList.remove('active');
-                setTimeout(() => el.style.display = 'none', 400);
-            } else {
-                el.style.display = 'flex';
-                setTimeout(() => modal.classList.add('active'), 10);
-            }
-        }
-
-        function checkAuthAndSave() {
-            if (!user) {
-                toggleSheet('entrySheet');
-                setTimeout(() => toggleSheet('authSheet'), 500);
-            } else {
-                save();
-            }
-        }
-
-        async function save() {
-            const t = document.getElementById('title').value;
-            const d = document.getElementById('date').value;
-            const ds = document.getElementById('desc').value;
-            if(!t || !d || !ds) return alert("Fill fields!");
-
-            await db.collection('users').doc(user.uid).collection('memories').add({
-                title: t, date: d, desc: ds,
-                color: gradients[Math.floor(Math.random()*gradients.length)],
-                created: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            toggleSheet('entrySheet');
-            loadData();
-        }
-
-        async function loadData() {
-            if (!user) return;
-            const snap = await db.collection('users').doc(user.uid).collection('memories').orderBy('created', 'desc').get();
-            document.getElementById('mainGrid').innerHTML = snap.docs.map(doc => {
-                const item = doc.data();
-                return `
-                <div class="card">
-                    <div class="card-header" style="background: ${item.color}">${item.title}</div>
-                    <div class="card-body">
-                        <span class="card-date">${item.date}</span>
-                        <p class="card-desc">${item.desc}</p>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-    </script>
 </body>
 </html>
