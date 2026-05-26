@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>Daily Echo</title>
 <link rel="icon" type="image/png" href="logo.png">
 
@@ -424,8 +424,9 @@ nav {
 
 input, textarea, select {
     padding: 14px;
-    font-size: 0.95rem;
+    font-size: 16px;  /* Prevents iOS auto-zoom on focus */
 }
+   
   .tabs {
     -webkit-overflow-scrolling: touch;
 } 
