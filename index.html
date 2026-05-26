@@ -334,15 +334,102 @@ color:var(--muted);
 margin-bottom:10px;
 }
 
-@media(max-width:700px){
-.header-card h1{
-font-size:1.8rem;
+/* =========================
+   MOBILE FIX PATCH (FINAL)
+========================= */
+
+@media (max-width: 768px) {
+
+nav {
+    padding: 14px;
 }
 
-.grid{
-grid-template-columns:1fr;
+.logo {
+    font-size: 1.3rem;
 }
+
+.header-card {
+    margin: 18px 12px;
+    padding: 20px;
+    border-radius: 20px;
 }
+
+.header-card h1 {
+    font-size: 1.4rem;
+}
+
+.header-card p {
+    font-size: 0.9rem;
+}
+
+.tabs {
+    gap: 8px;
+    padding: 0 10px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.tab {
+    white-space: nowrap;
+    font-size: 0.85rem;
+    padding: 10px 16px;
+    border-radius: 14px;
+}
+
+.container {
+    padding: 10px;
+}
+
+.grid {
+    grid-template-columns: 1fr; /* 👈 IMPORTANT FIX (stable mobile) */
+    gap: 12px;
+}
+
+.card {
+    border-radius: 18px;
+}
+
+.card-header {
+    font-size: 1rem;
+    padding: 20px 10px;
+    min-height: 90px;
+}
+
+.card-body {
+    padding: 14px;
+}
+
+.card-desc {
+    font-size: 0.85rem;
+} 
+  
+
+    .fab {
+        width: 60px;
+        height: 60px;
+        font-size: 1.6rem;
+        right: 16px;
+        bottom: 16px;
+    }
+ 
+  .modal {
+    padding: 20px;
+    border-radius: 24px 24px 0 0;
+}
+
+input, textarea, select {
+    padding: 14px;
+    font-size: 0.95rem;
+}
+  .tabs {
+    -webkit-overflow-scrolling: touch;
+} 
+  }
 </style>
 </head>
 <body>
@@ -403,231 +490,284 @@ grid-template-columns:1fr;
 </div>
 
 <script>
-let currentTab='moments';
-let editId=null;
+let currentTab = 'moments';
+let editId = null;
 
-const gradients=[
-'linear-gradient(135deg,#6366f1,#8b5cf6)',
-'linear-gradient(135deg,#ec4899,#8b5cf6)',
-'linear-gradient(135deg,#3b82f6,#06b6d4)',
-'linear-gradient(135deg,#10b981,#14b8a6)',
-'linear-gradient(135deg,#f59e0b,#ef4444)'
+const gradients = [
+    'linear-gradient(135deg,#6366f1,#8b5cf6)',
+    'linear-gradient(135deg,#ec4899,#8b5cf6)',
+    'linear-gradient(135deg,#3b82f6,#06b6d4)',
+    'linear-gradient(135deg,#10b981,#14b8a6)',
+    'linear-gradient(135deg,#f59e0b,#ef4444)'
 ];
 
-window.onload=()=>{
+function getTodayLocalISO() {
+    const now = new Date();
+    const tzOffset = now.getTimezoneOffset() * 60000;
+    return new Date(now.getTime() - tzOffset).toISOString().split('T')[0];
+}
 
-document.getElementById('title').addEventListener('input',e=>{
-document.getElementById('charCount').innerText=`${e.target.value.length} / 45`;
+document.addEventListener('DOMContentLoaded', () => {
+    const titleInput = document.getElementById('title');
+    const descInput = document.getElementById('desc');
+    const overlay = document.getElementById('entryOverlay');
+
+    titleInput.addEventListener('input', (e) => {
+        document.getElementById('charCount').innerText = `${e.target.value.length} / 45`;
+    });
+
+    descInput.addEventListener('input', (e) => {
+        document.getElementById('wordCount').innerText = `${e.target.value.length} / 1000`;
+    });
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+            overlay.classList.remove('show');
+        }
+    });
+
+    setToday();
+    loadData();
 });
 
-document.getElementById('desc').addEventListener('input',e=>{
-document.getElementById('wordCount').innerText=`${e.target.value.length} / 1000`;
-});
-setToday();
-loadData();
-};
-
-function setToday(){
-document.getElementById('date').value=new Date().toISOString().split('T')[0];
+function setToday() {
+    document.getElementById('date').value = getTodayLocalISO();
 }
 
-function switchTab(tab,event){
-currentTab=tab;
-document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-event.target.classList.add('active');
-loadData();
+function switchTab(tab, event) {
+    currentTab = tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+    loadData();
 }
 
-function openModal(){
-editId=null;
-document.getElementById('modalTitle').innerText='New Entry';
-document.getElementById('title').value='';
-document.getElementById('desc').value='';
-setToday();
-document.getElementById('entryOverlay').classList.add('show');
+function openModal() {
+    editId = null;
+    document.getElementById('modalTitle').innerText = 'New Entry';
+    document.getElementById('title').value = '';
+    document.getElementById('desc').value = '';
+    document.getElementById('entryType').value = currentTab === 'notes' ? 'note' : 'moment';
+    document.getElementById('charCount').innerText = '0 / 45';
+    document.getElementById('wordCount').innerText = '0 / 1000';
+    setToday();
+    document.getElementById('entryOverlay').classList.add('show');
 }
 
-window.onclick=e=>{
-if(e.target.id==='entryOverlay'){
-document.getElementById('entryOverlay').classList.remove('show');
-}
-}
-
-function getData(){
-return JSON.parse(localStorage.getItem('echoData')||'[]');
+function getData() {
+    try {
+        return JSON.parse(localStorage.getItem('echoData') || '[]');
+    } catch {
+        return [];
+    }
 }
 
-function getDeleted(){
-return JSON.parse(localStorage.getItem('echoDeleted')||'[]');
+function getDeleted() {
+    try {
+        return JSON.parse(localStorage.getItem('echoDeleted') || '[]');
+    } catch {
+        return [];
+    }
 }
 
-function saveMain(data){
-localStorage.setItem('echoData',JSON.stringify(data));
+function saveMain(data) {
+    localStorage.setItem('echoData', JSON.stringify(data));
 }
 
-function saveDeleted(data){
-localStorage.setItem('echoDeleted',JSON.stringify(data));
+function saveDeleted(data) {
+    localStorage.setItem('echoDeleted', JSON.stringify(data));
 }
 
-function saveEntry(){
-const title=document.getElementById('title').value.trim();
-const desc=document.getElementById('desc').value.trim();
-const date=document.getElementById('date').value;
-const type=document.getElementById('entryType').value;
-
-if(!title||!desc||!date){
-alert('Fill all fields');
-return;
+function closeEntryOverlay() {
+    document.getElementById('entryOverlay').classList.remove('show');
 }
 
-let data=getData();
+function saveEntry() {
+    const title = document.getElementById('title').value.trim();
+    const desc = document.getElementById('desc').value.trim();
+    const date = document.getElementById('date').value;
+    const type = document.getElementById('entryType').value;
 
-if(editId){
-const item=data.find(x=>x.id===editId);
-item.title=title;
-item.desc=desc;
-item.date=date;
-item.type=type;
-}else{
-data.push({
-id:Date.now(),
-title,
-desc,
-date,
-type,
-created:Date.now(),
-color:gradients[Math.floor(Math.random()*gradients.length)]
-});
+    if (!title || !desc || !date) {
+        alert('Fill all fields');
+        return;
+    }
+
+    const data = getData();
+
+    if (editId !== null) {
+        const item = data.find(x => x.id === editId);
+        if (!item) {
+            alert('Entry not found');
+            return;
+        }
+
+        item.title = title;
+        item.desc = desc;
+        item.date = date;
+        item.type = type;
+    } else {
+        data.push({
+            id: Date.now(),
+            title,
+            desc,
+            date,
+            type,
+            created: Date.now(),
+            color: gradients[Math.floor(Math.random() * gradients.length)]
+        });
+    }
+
+    saveMain(data);
+    editId = null;
+    closeEntryOverlay();
+    loadData();
 }
 
-saveMain(data);
-document.getElementById('entryOverlay').classList.remove('show');
-loadData();
+function loadData() {
+    const grid = document.getElementById('grid');
+    const data = currentTab === 'deleted'
+        ? getDeleted()
+        : getData().filter(x => x.type === (currentTab === 'moments' ? 'moment' : 'note'));
+
+    if (data.length === 0) {
+        grid.innerHTML = `
+            <div class="empty">
+                <h2>No entries found</h2>
+                <p>Create your first entry using the + button.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const sorted = [...data].reverse();
+
+    grid.innerHTML = sorted.map(item => `
+        <div class="card ${currentTab === 'deleted' ? 'deleted-card' : ''}">
+            <div class="card-header" style="background:${item.color || gradients[0]}">
+                ${escapeHtml(item.title || 'Untitled')}
+            </div>
+
+            <div class="card-body">
+                <span class="card-date">${escapeHtml(item.date || '')}</span>
+                <p class="card-desc">${escapeHtml(item.desc || '')}</p>
+
+                <div class="card-actions">
+                    ${
+                        currentTab !== 'deleted'
+                            ? `<button class="small-btn edit-btn" onclick="editEntry(${item.id})">Edit</button>
+                               <button class="small-btn delete-btn" onclick="deleteEntry(${item.id})">Delete</button>`
+                            : `<button class="small-btn restore-btn" onclick="restoreEntry(${item.id})">Restore</button>
+                               <button class="small-btn permanent-btn" onclick="permanentDelete(${item.id})">Delete Forever</button>`
+                    }
+                </div>
+            </div>
+        </div>
+    `).join('');
 }
 
-function loadData(){
-const grid=document.getElementById('grid');
-
-let data=currentTab==='deleted'
-?getDeleted()
-:getData().filter(x=>x.type===currentTab.slice(0,-1));
-
-if(data.length===0){
-grid.innerHTML=`
-<div class="empty">
-<h2>No entries found</h2>
-<p>Create your first entry using the + button.</p>
-</div>`;
-return;
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
-grid.innerHTML=data.reverse().map(item=>`
-<div class="card ${currentTab==='deleted'?'deleted-card':''}">
-<div class="card-header" style="background:${item.color}">
-${item.title}
-</div>
+function editEntry(id) {
+    const item = getData().find(x => x.id === id);
+    if (!item) return;
 
-<div class="card-body">
-<span class="card-date">${item.date}</span>
-<p class="card-desc">${item.desc}</p>
-
-<div class="card-actions">
-${currentTab!=='deleted'?
-`<button class="small-btn edit-btn" onclick="editEntry(${item.id})">Edit</button>
-<button class="small-btn delete-btn" onclick="deleteEntry(${item.id})">Delete</button>`
-:
-`<button class="small-btn restore-btn" onclick="restoreEntry(${item.id})">Restore</button>
-<button class="small-btn permanent-btn" onclick="permanentDelete(${item.id})">Delete Forever</button>`}
-</div>
-</div>
-</div>`).join('');
+    editId = id;
+    document.getElementById('modalTitle').innerText = 'Edit Entry';
+    document.getElementById('title').value = item.title || '';
+    document.getElementById('desc').value = item.desc || '';
+    document.getElementById('date').value = item.date || getTodayLocalISO();
+    document.getElementById('entryType').value = item.type || 'moment';
+    document.getElementById('charCount').innerText = `${document.getElementById('title').value.length} / 45`;
+    document.getElementById('wordCount').innerText = `${document.getElementById('desc').value.length} / 1000`;
+    document.getElementById('entryOverlay').classList.add('show');
 }
 
-function editEntry(id){
-const item=getData().find(x=>x.id===id);
-if(!item)return;
+function deleteEntry(id) {
+    const data = getData();
+    const deleted = getDeleted();
 
-editId=id;
-document.getElementById('modalTitle').innerText='Edit Entry';
-document.getElementById('title').value=item.title;
-document.getElementById('desc').value=item.desc;
-document.getElementById('date').value=item.date;
-document.getElementById('entryType').value=item.type;
+    const item = data.find(x => x.id === id);
+    if (!item) return;
 
-document.getElementById('entryOverlay').classList.add('show');
+    const removed = { ...item, deletedAt: Date.now() };
+    deleted.push(removed);
+
+    const filtered = data.filter(x => x.id !== id);
+
+    saveMain(filtered);
+    saveDeleted(deleted);
+    loadData();
 }
 
-function deleteEntry(id){
-let data=getData();
-let deleted=getDeleted();
+function restoreEntry(id) {
+    const data = getData();
+    const deleted = getDeleted();
 
-const item=data.find(x=>x.id===id);
-if(!item)return;
+    const item = deleted.find(x => x.id === id);
+    if (!item) return;
 
-item.deletedAt=Date.now();
-deleted.push(item);
+    const restored = { ...item };
+    delete restored.deletedAt;
 
-data=data.filter(x=>x.id!==id);
+    data.push(restored);
 
-saveMain(data);
-saveDeleted(deleted);
-loadData();
+    const filteredDeleted = deleted.filter(x => x.id !== id);
+
+    saveMain(data);
+    saveDeleted(filteredDeleted);
+    loadData();
 }
 
-function restoreEntry(id){
-let data=getData();
-let deleted=getDeleted();
-
-const item=deleted.find(x=>x.id===id);
-if(!item)return;
-
-delete item.deletedAt;
-data.push(item);
-
-deleted=deleted.filter(x=>x.id!==id);
-
-saveMain(data);
-saveDeleted(deleted);
-loadData();
+function permanentDelete(id) {
+    const deleted = getDeleted();
+    const filteredDeleted = deleted.filter(x => x.id !== id);
+    saveDeleted(filteredDeleted);
+    loadData();
 }
 
-function permanentDelete(id){
-let deleted=getDeleted();
-deleted=deleted.filter(x=>x.id!==id);
-saveDeleted(deleted);
-loadData();
+function deleteAllData() {
+    if (confirm('Delete ALL data permanently?')) {
+        localStorage.removeItem('echoData');
+        localStorage.removeItem('echoDeleted');
+        editId = null;
+        closeEntryOverlay();
+        loadData();
+    }
 }
 
-function deleteAllData(){
-if(confirm('Delete ALL data permanently?')){
-localStorage.removeItem('echoData');
-localStorage.removeItem('echoDeleted');
-loadData();
+function toggleFullscreen() {
+    const textarea = document.getElementById('desc');
+
+    if (!document.fullscreenElement) {
+        textarea.requestFullscreen().catch(() => {});
+        textarea.style.background = '#020617';
+        textarea.style.padding = '30px';
+        textarea.style.fontSize = '1.1rem';
+    } else {
+        document.exitFullscreen();
+    }
 }
-}
 
-function toggleFullscreen(){
-const textarea=document.getElementById('desc');
+function exportBackup() {
+    const payload = getData();
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
 
-if(!document.fullscreenElement){
-textarea.requestFullscreen().catch(()=>{});
-textarea.style.background='#020617';
-textarea.style.padding='30px';
-textarea.style.fontSize='1.1rem';
-}else{
-document.exitFullscreen();
-}
-};
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'daily-echo-backup.json';
+    a.click();
 
-const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
-const url=URL.createObjectURL(blob);
-
-const a=document.createElement('a');
-a.href=url;
-a.download='daily-echo-backup.json';
-a.click();
-
-URL.revokeObjectURL(url);
+    URL.revokeObjectURL(url);
 }
 </script>
 
