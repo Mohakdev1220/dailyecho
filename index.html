@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Daily Echo</title> 
-  <link rel="icon" type="image/png" href="logo.png">
+<title>Daily Echo</title>
+<link rel="icon" type="image/png" href="logo.png">
 
 <style>
 :root{
@@ -140,6 +140,16 @@ padding:20px;
 display:grid;
 grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
 gap:24px;
+}
+
+.card.deleted-card{
+border:1px solid rgba(239,68,68,.25);
+background:rgba(127,29,29,.18);
+}
+
+.card.deleted-card .card-header{
+filter:grayscale(.4);
+opacity:.9;
 }
 
 .card{
@@ -338,10 +348,15 @@ grid-template-columns:1fr;
 <body>
 
 <nav>
+<div style="display:flex;align-items:center;gap:12px;">
+<img src="logo.png" alt="Logo" style="width:42px;height:42px;border-radius:12px;object-fit:cover;">
 <div class="logo">DailyECHO</div>
+</div>
 
 <div class="nav-right">
-<button class="top-btn" onclick="exportData()">Export</button>
+<button class="top-btn" onclick="window.location.href='feedback.html'">Feedback</button>
+<button class="top-btn" onclick="window.location.href='about.html'">About</button>
+<button class="top-btn" onclick="window.open('https://mohakdev1220.github.io/websites_link/')">Other Sites</button>
 <button class="top-btn" onclick="deleteAllData()">Delete All</button>
 </div>
 </nav>
@@ -372,9 +387,16 @@ grid-template-columns:1fr;
 <option value="note">📝 Note</option>
 </select>
 
-<input type="text" id="title" maxlength="45" placeholder="Title">
+<label style="display:block;margin-bottom:8px;color:#cbd5e1;font-weight:700;">Title (45 characters max)</label>
+<input type="text" id="title" maxlength="45" placeholder="Enter title...">
+<div id="charCount" style="margin-top:-10px;margin-bottom:15px;color:#94a3b8;font-size:.85rem;text-align:right;">0 / 45</div>
 <input type="date" id="date">
-<textarea rows="6" id="desc" placeholder="Write something..."></textarea>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+<label style="color:#cbd5e1;font-weight:700;">Description</label>
+<button type="button" onclick="toggleFullscreen()" style="background:rgba(255,255,255,.08);border:none;color:white;padding:8px 12px;border-radius:12px;cursor:pointer;">Fullscreen</button>
+</div>
+<textarea rows="6" maxlength="1000" id="desc" placeholder="Write something..."></textarea>
+<div id="wordCount" style="margin-top:-10px;margin-bottom:15px;color:#94a3b8;font-size:.85rem;text-align:right;">0 / 1000</div>
 
 <button class="main-btn" onclick="saveEntry()">Save Entry</button>
 </div>
@@ -393,6 +415,14 @@ const gradients=[
 ];
 
 window.onload=()=>{
+
+document.getElementById('title').addEventListener('input',e=>{
+document.getElementById('charCount').innerText=`${e.target.value.length} / 45`;
+});
+
+document.getElementById('desc').addEventListener('input',e=>{
+document.getElementById('wordCount').innerText=`${e.target.value.length} / 1000`;
+});
 setToday();
 loadData();
 };
@@ -492,7 +522,7 @@ return;
 }
 
 grid.innerHTML=data.reverse().map(item=>`
-<div class="card">
+<div class="card ${currentTab==='deleted'?'deleted-card':''}">
 <div class="card-header" style="background:${item.color}">
 ${item.title}
 </div>
@@ -576,11 +606,17 @@ loadData();
 }
 }
 
-function exportData(){
-const payload={
-data:getData(),
-deleted:getDeleted(),
-exported:new Date().toISOString()
+function toggleFullscreen(){
+const textarea=document.getElementById('desc');
+
+if(!document.fullscreenElement){
+textarea.requestFullscreen().catch(()=>{});
+textarea.style.background='#020617';
+textarea.style.padding='30px';
+textarea.style.fontSize='1.1rem';
+}else{
+document.exitFullscreen();
+}
 };
 
 const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
@@ -595,5 +631,8 @@ URL.revokeObjectURL(url);
 }
 </script>
 
+<footer style="margin-top:60px;padding:30px 20px;border-top:1px solid rgba(255,255,255,.08);text-align:center;color:#94a3b8;">
+Developed by Mohak
+</footer>
 </body>
 </html>
