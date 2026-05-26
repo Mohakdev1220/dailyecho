@@ -5,835 +5,467 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>Daily Echo</title>
 <link rel="icon" type="image/png" href="logo.png">
-
 <style>
 :root{
---primary:#6366f1;
---secondary:#8b5cf6;
---bg:#020617;
---card:rgba(255,255,255,0.04);
---border:rgba(255,255,255,0.08);
---text:#f8fafc;
---muted:#94a3b8;
---danger:#ef4444;
---success:#10b981;
+  --primary:#6366f1;
+  --secondary:#8b5cf6;
+  --bg:#020617;
+  --card:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.08);
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --danger:#ef4444;
+  --success:#10b981;
 }
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Inter,-apple-system,sans-serif;
-}
-
-body{
-background:var(--bg);
-color:var(--text);
-overflow-x:hidden;
-}
-
+*{ margin:0; padding:0; box-sizing:border-box; font-family:Inter,-apple-system,sans-serif; }
+body{ background:var(--bg); color:var(--text); overflow-x:hidden; }
 body::before{
-content:"";
-position:fixed;
-inset:0;
-background:
-radial-gradient(circle at top left,#312e81 0%,transparent 35%),
-radial-gradient(circle at bottom right,#581c87 0%,transparent 35%),
-#020617;
-z-index:-1;
+  content:""; position:fixed; inset:0;
+  background:radial-gradient(circle at top left,#312e81 0%,transparent 35%),
+             radial-gradient(circle at bottom right,#581c87 0%,transparent 35%),#020617;
+  z-index:-1;
 }
-
 nav{
-position:sticky;
-top:0;
-z-index:100;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:22px;
-background:rgba(2,6,23,.8);
-backdrop-filter:blur(20px);
-border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:100;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:22px; background:rgba(2,6,23,.8); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
 }
-
 .logo{
-font-size:1.8rem;
-font-weight:900;
-background:linear-gradient(45deg,#818cf8,#c084fc);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
+  font-size:1.8rem; font-weight:900;
+  background:linear-gradient(45deg,#818cf8,#c084fc);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
 }
-
-.nav-right{
-display:flex;
-gap:12px;
-align-items:center;
-}
-
+.nav-right{ display:flex; gap:12px; align-items:center; }
 .top-btn{
-background:var(--card);
-border:1px solid var(--border);
-color:white;
-padding:12px 16px;
-border-radius:16px;
-cursor:pointer;
-font-weight:700;
-transition:.25s;
+  background:var(--card); border:1px solid var(--border);
+  color:white; padding:12px 16px; border-radius:16px;
+  cursor:pointer; font-weight:700; transition:.25s;
 }
-
-.top-btn:hover{
-transform:translateY(-2px);
-background:rgba(99,102,241,.12);
-}
-
+.top-btn:hover{ transform:translateY(-2px); background:rgba(99,102,241,.12); }
 .header-card{
-max-width:1200px;
-margin:30px auto;
-padding:30px;
-border:1px solid var(--border);
-background:var(--card);
-backdrop-filter:blur(20px);
-border-radius:32px;
+  max-width:1200px; margin:30px auto; padding:30px;
+  border:1px solid var(--border); background:var(--card);
+  backdrop-filter:blur(20px); border-radius:32px;
 }
-
-.header-card h1{
-font-size:2.4rem;
-margin-bottom:10px;
-}
-
-.header-card p{
-color:var(--muted);
-line-height:1.6;
-}
-
+.header-card h1{ font-size:2.4rem; margin-bottom:10px; }
+.header-card p{ color:var(--muted); line-height:1.6; }
 .tabs{
-max-width:1200px;
-margin:20px auto;
-padding:0 20px;
-display:flex;
-gap:14px;
-flex-wrap:wrap;
+  max-width:1200px; margin:20px auto; padding:0 20px;
+  display:flex; gap:14px; flex-wrap:wrap;
 }
-
 .tab{
-padding:13px 24px;
-border-radius:18px;
-background:var(--card);
-border:1px solid var(--border);
-font-weight:700;
-cursor:pointer;
-transition:.25s;
+  padding:13px 24px; border-radius:18px; background:var(--card);
+  border:1px solid var(--border); font-weight:700; cursor:pointer; transition:.25s;
 }
-
-.tab.active{
-background:var(--primary);
-border-color:var(--primary);
-}
-
-.container{
-max-width:1200px;
-margin:auto;
-padding:20px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-gap:24px;
-}
-
-.card.deleted-card{
-border:1px solid rgba(239,68,68,.25);
-background:rgba(127,29,29,.18);
-}
-
-.card.deleted-card .card-header{
-filter:grayscale(.4);
-opacity:.9;
-}
-
+.tab.active{ background:var(--primary); border-color:var(--primary); }
+.container{ max-width:1200px; margin:auto; padding:20px; }
+.grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:24px; }
 .card{
-position:relative;
-border-radius:28px;
-overflow:hidden;
-background:var(--card);
-border:1px solid var(--border);
-backdrop-filter:blur(16px);
-transition:.35s;
+  position:relative; border-radius:28px; overflow:hidden;
+  background:var(--card); border:1px solid var(--border);
+  backdrop-filter:blur(16px); transition:.35s;
 }
-
-.card:hover{
-transform:translateY(-8px);
-border-color:rgba(99,102,241,.5);
-}
-
+.card:hover{ transform:translateY(-8px); border-color:rgba(99,102,241,.5); }
+.card.deleted-card{ border:1px solid rgba(239,68,68,.25); background:rgba(127,29,29,.18); }
+.card.deleted-card .card-header{ filter:grayscale(.4); opacity:.9; }
 .card-header{
-padding:34px 24px;
-font-size:1.3rem;
-font-weight:800;
-min-height:120px;
-display:flex;
-align-items:center;
-justify-content:center;
-text-align:center;
+  padding:34px 24px; font-size:1.3rem; font-weight:800;
+  min-height:120px; display:flex; align-items:center;
+  justify-content:center; text-align:center;
 }
-
-.card-body{
-padding:24px;
-}
-
+.card-body{ padding:24px; }
 .card-date{
-font-size:.8rem;
-font-weight:800;
-color:#a5b4fc;
-margin-bottom:12px;
-display:block;
-text-transform:uppercase;
+  font-size:.8rem; font-weight:800; color:#a5b4fc;
+  margin-bottom:12px; display:block; text-transform:uppercase;
 }
-
-.card-desc{
-line-height:1.7;
-color:var(--muted);
-white-space:pre-wrap;
-word-break:break-word;
-}
-
-.card-actions{
-display:flex;
-gap:10px;
-margin-top:18px;
-flex-wrap:wrap;
-}
-
-.small-btn{
-flex:1;
-padding:12px;
-border:none;
-border-radius:14px;
-font-weight:800;
-cursor:pointer;
-transition:.25s;
-}
-
-.edit-btn{
-background:rgba(59,130,246,.18);
-color:#93c5fd;
-}
-
-.delete-btn{
-background:rgba(239,68,68,.18);
-color:#fca5a5;
-}
-
-.restore-btn{
-background:rgba(16,185,129,.18);
-color:#6ee7b7;
-}
-
-.permanent-btn{
-background:rgba(239,68,68,.25);
-color:#fecaca;
-}
-
-.small-btn:hover{
-transform:translateY(-2px);
-}
-
+.card-desc{ line-height:1.7; color:var(--muted); white-space:pre-wrap; word-break:break-word; }
+.card-actions{ display:flex; gap:10px; margin-top:18px; flex-wrap:wrap; }
+.small-btn{ flex:1; padding:12px; border:none; border-radius:14px; font-weight:800; cursor:pointer; transition:.25s; }
+.edit-btn{ background:rgba(59,130,246,.18); color:#93c5fd; }
+.delete-btn{ background:rgba(239,68,68,.18); color:#fca5a5; }
+.restore-btn{ background:rgba(16,185,129,.18); color:#6ee7b7; }
+.permanent-btn{ background:rgba(239,68,68,.25); color:#fecaca; }
+.small-btn:hover{ transform:translateY(-2px); }
 .fab{
-position:fixed;
-right:25px;
-bottom:25px;
-width:75px;
-height:75px;
-border:none;
-border-radius:24px;
-background:var(--primary);
-color:white;
-font-size:2rem;
-font-weight:900;
-cursor:pointer;
-box-shadow:0 20px 50px rgba(99,102,241,.4);
-transition:.3s;
+  position:fixed; right:25px; bottom:25px; width:75px; height:75px;
+  border:none; border-radius:24px; background:var(--primary); color:white;
+  font-size:2rem; font-weight:900; cursor:pointer;
+  box-shadow:0 20px 50px rgba(99,102,241,.4); transition:.3s;
 }
-
-.fab:hover{
-transform:rotate(90deg) scale(1.06);
-}
-
+.fab:hover{ transform:rotate(90deg) scale(1.06); }
 .overlay{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.7);
-backdrop-filter:blur(8px);
-display:none;
-align-items:center;
-justify-content:center;
-padding:20px;
-z-index:999;
+  position:fixed; inset:0; background:rgba(0,0,0,.7);
+  backdrop-filter:blur(8px); display:none;
+  align-items:center; justify-content:center; padding:20px; z-index:999;
 }
-
-.overlay.show{
-display:flex;
-}
-
+.overlay.show{ display:flex; }
 .modal{
-width:100%;
-max-width:600px;
-background:#0f172a;
-border:1px solid var(--border);
-border-radius:32px;
-padding:30px;
-animation:popup .25s ease;
+  width:100%; max-width:600px; background:#0f172a;
+  border:1px solid var(--border); border-radius:32px;
+  padding:30px; animation:popup .25s ease;
 }
-
-@keyframes popup{
-from{opacity:0;transform:scale(.9)}
-to{opacity:1;transform:scale(1)}
-}
-
-.modal h2{
-margin-bottom:20px;
-}
-
+@keyframes popup{ from{opacity:0;transform:scale(.9)} to{opacity:1;transform:scale(1)} }
+.modal h2{ margin-bottom:20px; }
 input,textarea,select{
-width:100%;
-margin-bottom:16px;
-padding:16px;
-border-radius:18px;
-border:1px solid var(--border);
-background:#111827;
-color:white;
-font-size:1rem;
-outline:none;
+  width:100%; margin-bottom:16px; padding:16px;
+  border-radius:18px; border:1px solid var(--border);
+  background:#111827; color:white; font-size:1rem; outline:none;
 }
-
-textarea{
-resize:none;
-}
-
+textarea{ resize:none; }
 .main-btn{
-width:100%;
-padding:16px;
-border:none;
-border-radius:18px;
-background:var(--primary);
-color:white;
-font-weight:800;
-font-size:1rem;
-cursor:pointer;
+  width:100%; padding:16px; border:none; border-radius:18px;
+  background:var(--primary); color:white; font-weight:800; font-size:1rem; cursor:pointer;
 }
+.empty{ grid-column:1/-1; padding:80px 20px; text-align:center; color:var(--muted); }
+.empty h2{ margin-bottom:10px; }
 
-.empty{
-grid-column:1/-1;
-padding:80px 20px;
-text-align:center;
-color:var(--muted);
+/* Mobile menu */
+.mobile-menu-btn{ display:none; }
+.tab-short{ display:none; }
+
+/* Mobile dropdown */
+.mobile-dropdown{
+  display:none; position:fixed; top:72px; right:14px; z-index:200;
+  background:#0f172a; border:1px solid rgba(255,255,255,0.1);
+  border-radius:18px; padding:10px; min-width:170px; backdrop-filter:blur(20px);
 }
-
-.empty h2{
-margin-bottom:10px;
-} 
-   .mobile-menu-btn { display: none; 
-                    } 
-
-   .tab-short { display: none; }
-
-   
-
-/* =========================
-   MOBILE FIX PATCH (FINAL)
-========================= */
-
-@media (max-width: 768px) {
-
-nav {
-    padding: 14px;
+.mobile-menu-item{
+  display:block; width:100%; padding:12px 16px; background:none;
+  border:none; color:white; font-size:0.95rem; font-weight:700;
+  text-align:left; cursor:pointer; border-radius:12px; transition:.2s;
 }
+.mobile-menu-item:hover{ background:rgba(255,255,255,0.07); }
 
-.logo {
-    font-size: 1.3rem;
+/* Footer */
+footer{
+  margin-top:60px; padding:30px 20px;
+  border-top:1px solid rgba(255,255,255,.08);
+  text-align:center; color:#94a3b8;
 }
-.tab-full { display: none; }
-.tab-short { display: inline; }
-   
-.header-card {
-    margin: 18px 12px;
-    padding: 20px;
-    border-radius: 20px;
-} 
-
-   .desktop-only { display: none; }
-.mobile-menu-btn { display: inline-flex; }
-
-.header-card h1 {
-    font-size: 1.4rem;
+.footer-links{ display:flex; justify-content:center; gap:20px; flex-wrap:wrap; margin-top:14px; }
+.footer-link{
+  color:#a5b4fc; text-decoration:none; font-weight:700;
+  font-size:0.9rem; transition:.2s;
 }
+.footer-link:hover{ color:#c4b5fd; }
 
-.header-card p {
-    font-size: 0.9rem;
-}
-
-.tabs {
-    gap: 8px;
-    padding: 0 10px;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    scrollbar-width: none;
-}
-
-.tabs::-webkit-scrollbar {
-    display: none;
-}
-
-.tab {
-    white-space: nowrap;
-    font-size: 0.85rem;
-    padding: 10px 16px;
-    border-radius: 14px;
-}
-
-.container {
-    padding: 10px;
-}
-
-.grid {
-    grid-template-columns: 1fr; /* 👈 IMPORTANT FIX (stable mobile) */
-    gap: 12px;
-}
-
-.card {
-    border-radius: 18px;
-}
-
-.card-header {
-    font-size: 1rem;
-    padding: 20px 10px;
-    min-height: 90px;
-}
-
-.card-body {
-    padding: 14px;
-}
-
-.card-desc {
-    font-size: 0.85rem;
-} 
-  
-
-    .fab {
-        width: 60px;
-        height: 60px;
-        font-size: 1.6rem;
-        right: 16px;
-        bottom: 16px;
-    }
- 
-  .modal {
-    padding: 20px;
-    border-radius: 24px 24px 0 0;
-    max-height: 90vh;
-    overflow-y: auto;
-}
-
-input, textarea, select {
-    padding: 14px;
-    font-size: 16px;  /* Prevents iOS auto-zoom on focus */
-}
-   .overlay {
-    align-items: flex-end;
-    padding: 0;
-}
-   
-  .tabs {
-    -webkit-overflow-scrolling: touch;
-} 
+/* =====================
+   MOBILE
+===================== */
+@media (max-width:768px){
+  nav{ padding:14px; }
+  .logo{ font-size:1.3rem; }
+  .tab-full{ display:none; }
+  .tab-short{ display:inline; }
+  .desktop-only{ display:none; }
+  .mobile-menu-btn{ display:inline-flex; }
+  .header-card{ margin:18px 12px; padding:20px; border-radius:20px; }
+  .header-card h1{ font-size:1.4rem; }
+  .header-card p{ font-size:0.9rem; }
+  .tabs{
+    gap:8px; padding:0 10px;
+    overflow-x:auto; flex-wrap:nowrap;
+    scrollbar-width:none; -webkit-overflow-scrolling:touch;
   }
-
-   .mobile-menu-item {
-  display: block;
-  width: 100%;
-  padding: 12px 16px;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 0.95rem;
-  font-weight: 700;
-  text-align: left;
-  cursor: pointer;
-  border-radius: 12px;
-  transition: .2s;
+  .tabs::-webkit-scrollbar{ display:none; }
+  .tab{ white-space:nowrap; font-size:0.85rem; padding:10px 16px; border-radius:14px; }
+  .container{ padding:10px; }
+  .grid{ grid-template-columns:1fr; gap:12px; }
+  .card{ border-radius:18px; }
+  .card-header{ font-size:1rem; padding:20px 10px; min-height:90px; }
+  .card-body{ padding:14px; }
+  .card-desc{ font-size:0.85rem; }
+  .fab{ width:60px; height:60px; font-size:1.6rem; right:16px; bottom:16px; }
+  .overlay{ align-items:flex-end; padding:0; }
+  .modal{ padding:20px; border-radius:24px 24px 0 0; max-height:90vh; overflow-y:auto; }
+  input,textarea,select{ padding:14px; font-size:16px; }
+  .footer-links{ gap:14px; }
 }
-.mobile-menu-item:hover {
-  background: rgba(255,255,255,0.07);
-}
-   
 </style>
 </head>
 <body>
 
 <nav>
-<div style="display:flex;align-items:center;gap:12px;">
-  <img src="logo.png" alt="Logo" style="width:42px;height:42px;border-radius:12px;object-fit:cover;">
-  <div class="logo">DailyECHO</div>
-</div>
-
-<div class="nav-right">
-  <button class="top-btn" onclick="window.location.href='feedback.html'">Feedback</button>
-  <button class="top-btn" onclick="window.location.href='about.html'">About</button>
-  <button class="top-btn desktop-only" onclick="window.open('https://mohakdev1220.github.io/websites_link/')">Other Sites</button>
-  <button class="top-btn desktop-only" onclick="deleteAllData()">Delete All</button>
-  <button class="top-btn mobile-menu-btn" onclick="toggleMobileMenu()">&#9776;</button>
-</div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <img src="logo.png" alt="Logo" style="width:42px;height:42px;border-radius:12px;object-fit:cover;">
+    <div class="logo">DailyECHO</div>
+  </div>
+  <div class="nav-right">
+    <button class="top-btn" onclick="window.location.href='feedback.html'">Feedback</button>
+    <button class="top-btn" onclick="window.location.href='about.html'">About</button>
+    <button class="top-btn desktop-only" onclick="window.open('https://mohakdev1220.github.io/websites_link/')">Other Sites</button>
+    <button class="top-btn desktop-only" onclick="deleteAllData()">Delete All</button>
+    <button class="top-btn mobile-menu-btn" onclick="toggleMobileMenu()">&#9776;</button>
+  </div>
 </nav>
 
-<!-- Mobile dropdown menu -->
-<div id="mobileMenu" style="display:none;position:fixed;top:72px;right:14px;z-index:200;background:#0f172a;border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:10px;min-width:160px;backdrop-filter:blur(20px);">
+<div class="mobile-dropdown" id="mobileMenu">
   <button class="mobile-menu-item" onclick="window.open('https://mohakdev1220.github.io/websites_link/');toggleMobileMenu()">🌐 Other Sites</button>
   <button class="mobile-menu-item" style="color:#fca5a5;" onclick="deleteAllData();toggleMobileMenu()">🗑 Delete All</button>
 </div>
 
-<div class="header-card">
-<h1>Your Private Space</h1>
-<p>Save memories, thoughts, notes, late-night ideas, and important moments — all stored locally inside your browser.</p>
+<div class="header-card" style="margin-left:20px;margin-right:20px;">
+  <h1>Your Private Space</h1>
+  <p>Save memories, thoughts, notes, late-night ideas, and important moments — all stored locally inside your browser.</p>
 </div>
 
 <div class="tabs">
-<div class="tab active" onclick="switchTab('moments',event)">✨ Moments</div>
-<div class="tab" onclick="switchTab('notes',event)">📝 Notes</div>
-<div class="tab" onclick="switchTab('deleted',event)">
-  <span class="tab-full">🗑 Recently Deleted</span>
-  <span class="tab-short">🗑 Deleted</span>
-</div>
+  <div class="tab active" onclick="switchTab('moments',event)">✨ Moments</div>
+  <div class="tab" onclick="switchTab('notes',event)">📝 Notes</div>
+  <div class="tab" onclick="switchTab('deleted',event)">
+    <span class="tab-full">🗑 Recently Deleted</span>
+    <span class="tab-short">🗑 Deleted</span>
+  </div>
 </div>
 
 <div class="container">
-<div class="grid" id="grid"></div>
+  <div class="grid" id="grid"></div>
 </div>
 
 <button class="fab" onclick="openModal()">+</button>
 
 <div class="overlay" id="entryOverlay">
-<div class="modal">
-<h2 id="modalTitle">New Entry</h2>
-
-<select id="entryType">
-<option value="moment">✨ Moment</option>
-<option value="note">📝 Note</option>
-</select>
-
-<label style="display:block;margin-bottom:8px;color:#cbd5e1;font-weight:700;">Title (45 characters max)</label>
-<input type="text" id="title" maxlength="45" placeholder="Enter title...">
-<div id="charCount" style="margin-top:-10px;margin-bottom:15px;color:#94a3b8;font-size:.85rem;text-align:right;">0 / 45</div>
-<input type="date" id="date">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-<label style="color:#cbd5e1;font-weight:700;">Description</label>
-<button type="button" onclick="toggleFullscreen()" style="background:rgba(255,255,255,.08);border:none;color:white;padding:8px 12px;border-radius:12px;cursor:pointer;">Fullscreen</button>
+  <div class="modal">
+    <h2 id="modalTitle">New Entry</h2>
+    <select id="entryType">
+      <option value="moment">✨ Moment</option>
+      <option value="note">📝 Note</option>
+    </select>
+    <label style="display:block;margin-bottom:8px;color:#cbd5e1;font-weight:700;">Title (45 characters max)</label>
+    <input type="text" id="title" maxlength="45" placeholder="Enter title...">
+    <div id="charCount" style="margin-top:-10px;margin-bottom:15px;color:#94a3b8;font-size:.85rem;text-align:right;">0 / 45</div>
+    <input type="date" id="date">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <label style="color:#cbd5e1;font-weight:700;">Description</label>
+      <button type="button" onclick="toggleFullscreen()" style="background:rgba(255,255,255,.08);border:none;color:white;padding:8px 12px;border-radius:12px;cursor:pointer;">Fullscreen</button>
+    </div>
+    <textarea rows="6" maxlength="1000" id="desc" placeholder="Write something..."></textarea>
+    <div id="wordCount" style="margin-top:-10px;margin-bottom:15px;color:#94a3b8;font-size:.85rem;text-align:right;">0 / 1000</div>
+    <button class="main-btn" onclick="saveEntry()">Save Entry</button>
+  </div>
 </div>
-<textarea rows="6" maxlength="1000" id="desc" placeholder="Write something..."></textarea>
-<div id="wordCount" style="margin-top:-10px;margin-bottom:15px;color:#94a3b8;font-size:.85rem;text-align:right;">0 / 1000</div>
 
-<button class="main-btn" onclick="saveEntry()">Save Entry</button>
-</div>
-</div>
+<footer>
+  <p>Developed by Mohak</p>
+  <div class="footer-links">
+    <a href="feedback.html" class="footer-link">💬 Feedback</a>
+    <a href="about.html" class="footer-link">ℹ️ About</a>
+    <a href="https://mohakdev1220.github.io/websites_link/" target="_blank" class="footer-link">🌐 Other Sites</a>
+  </div>
+</footer>
 
 <script>
 let currentTab = 'moments';
 let editId = null;
 
 const gradients = [
-    'linear-gradient(135deg,#6366f1,#8b5cf6)',
-    'linear-gradient(135deg,#ec4899,#8b5cf6)',
-    'linear-gradient(135deg,#3b82f6,#06b6d4)',
-    'linear-gradient(135deg,#10b981,#14b8a6)',
-    'linear-gradient(135deg,#f59e0b,#ef4444)'
+  'linear-gradient(135deg,#6366f1,#8b5cf6)',
+  'linear-gradient(135deg,#ec4899,#8b5cf6)',
+  'linear-gradient(135deg,#3b82f6,#06b6d4)',
+  'linear-gradient(135deg,#10b981,#14b8a6)',
+  'linear-gradient(135deg,#f59e0b,#ef4444)'
 ];
 
 function getTodayLocalISO() {
-    const now = new Date();
-    const tzOffset = now.getTimezoneOffset() * 60000;
-    return new Date(now.getTime() - tzOffset).toISOString().split('T')[0];
+  const now = new Date();
+  return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const titleInput = document.getElementById('title');
-    const descInput = document.getElementById('desc');
-    const overlay = document.getElementById('entryOverlay');
-
-    titleInput.addEventListener('input', (e) => {
-        document.getElementById('charCount').innerText = `${e.target.value.length} / 45`;
-    });
-
-    descInput.addEventListener('input', (e) => {
-        document.getElementById('wordCount').innerText = `${e.target.value.length} / 1000`;
-    });
-
-    overlay.addEventListener('click', (e) => {
-        if (e.target === e.currentTarget) {
-            overlay.classList.remove('show');
-        }
-    });
-
-    setToday();
-    loadData();
+  document.getElementById('title').addEventListener('input', e => {
+    document.getElementById('charCount').innerText = `${e.target.value.length} / 45`;
+  });
+  document.getElementById('desc').addEventListener('input', e => {
+    document.getElementById('wordCount').innerText = `${e.target.value.length} / 1000`;
+  });
+  document.getElementById('entryOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeEntryOverlay();
+  });
+  setToday();
+  loadData();
 });
 
 function setToday() {
-    document.getElementById('date').value = getTodayLocalISO();
+  document.getElementById('date').value = getTodayLocalISO();
 }
 
 function switchTab(tab, event) {
-    currentTab = tab;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    if (event && event.target) {
-        event.target.closest('.tab').classList.add('active');
-    }
-    loadData();
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if (event && event.target) event.target.closest('.tab').classList.add('active');
+  loadData();
 }
 
 function openModal() {
-    editId = null;
-    document.getElementById('modalTitle').innerText = 'New Entry';
-    document.getElementById('title').value = '';
-    document.getElementById('desc').value = '';
-    document.getElementById('entryType').value = currentTab === 'notes' ? 'note' : 'moment';
-    document.getElementById('charCount').innerText = '0 / 45';
-    document.getElementById('wordCount').innerText = '0 / 1000';
-    setToday();
-    document.getElementById('entryOverlay').classList.add('show');
-}
-
-function getData() {
-    try {
-        return JSON.parse(localStorage.getItem('echoData') || '[]');
-    } catch {
-        return [];
-    }
-}
-
-function getDeleted() {
-    try {
-        return JSON.parse(localStorage.getItem('echoDeleted') || '[]');
-    } catch {
-        return [];
-    }
-}
-
-function saveMain(data) {
-    localStorage.setItem('echoData', JSON.stringify(data));
-}
-
-function saveDeleted(data) {
-    localStorage.setItem('echoDeleted', JSON.stringify(data));
+  editId = null;
+  document.getElementById('modalTitle').innerText = 'New Entry';
+  document.getElementById('title').value = '';
+  document.getElementById('desc').value = '';
+  document.getElementById('entryType').value = currentTab === 'notes' ? 'note' : 'moment';
+  document.getElementById('charCount').innerText = '0 / 45';
+  document.getElementById('wordCount').innerText = '0 / 1000';
+  setToday();
+  document.getElementById('entryOverlay').classList.add('show');
 }
 
 function closeEntryOverlay() {
-    document.getElementById('entryOverlay').classList.remove('show');
+  document.getElementById('entryOverlay').classList.remove('show');
 }
 
+function getData() {
+  try { return JSON.parse(localStorage.getItem('echoData') || '[]'); } catch { return []; }
+}
+
+function getDeleted() {
+  try { return JSON.parse(localStorage.getItem('echoDeleted') || '[]'); } catch { return []; }
+}
+
+function saveMain(data) { localStorage.setItem('echoData', JSON.stringify(data)); }
+function saveDeleted(data) { localStorage.setItem('echoDeleted', JSON.stringify(data)); }
+
 function saveEntry() {
-    const title = document.getElementById('title').value.trim();
-    const desc = document.getElementById('desc').value.trim();
-    const date = document.getElementById('date').value;
-    const type = document.getElementById('entryType').value;
+  const title = document.getElementById('title').value.trim();
+  const desc = document.getElementById('desc').value.trim();
+  const date = document.getElementById('date').value;
+  const type = document.getElementById('entryType').value;
 
-    if (!title || !desc || !date) {
-        alert('Fill all fields');
-        return;
-    }
+  if (!title || !desc || !date) { alert('Fill all fields'); return; }
 
-    const data = getData();
-
-    if (editId !== null) {
-        const item = data.find(x => x.id === editId);
-        if (!item) {
-            alert('Entry not found');
-            return;
-        }
-
-        item.title = title;
-        item.desc = desc;
-        item.date = date;
-        item.type = type;
-    } else {
-        data.push({
-            id: Date.now(),
-            title,
-            desc,
-            date,
-            type,
-            created: Date.now(),
-            color: gradients[Math.floor(Math.random() * gradients.length)]
-        });
-    }
-
-    saveMain(data);
-    editId = null;
-    closeEntryOverlay();
-    loadData();
+  const data = getData();
+  if (editId !== null) {
+    const item = data.find(x => x.id === editId);
+    if (!item) { alert('Entry not found'); return; }
+    item.title = title; item.desc = desc; item.date = date; item.type = type;
+  } else {
+    data.push({
+      id: Date.now(), title, desc, date, type, created: Date.now(),
+      color: gradients[Math.floor(Math.random() * gradients.length)]
+    });
+  }
+  saveMain(data);
+  editId = null;
+  closeEntryOverlay();
+  loadData();
 }
 
 function loadData() {
-    const grid = document.getElementById('grid');
-    const data = currentTab === 'deleted'
-        ? getDeleted()
-        : getData().filter(x => x.type === (currentTab === 'moments' ? 'moment' : 'note'));
+  const grid = document.getElementById('grid');
+  const data = currentTab === 'deleted'
+    ? getDeleted()
+    : getData().filter(x => x.type === (currentTab === 'moments' ? 'moment' : 'note'));
 
-    if (data.length === 0) {
-        grid.innerHTML = `
-            <div class="empty">
-                <h2>No entries found</h2>
-                <p>Create your first entry using the + button.</p>
-            </div>
-        `;
-        return;
-    }
+  if (data.length === 0) {
+    grid.innerHTML = `<div class="empty"><h2>No entries found</h2><p>Create your first entry using the + button.</p></div>`;
+    return;
+  }
 
-    const sorted = [...data].reverse();
-
-    grid.innerHTML = sorted.map(item => `
-        <div class="card ${currentTab === 'deleted' ? 'deleted-card' : ''}">
-            <div class="card-header" style="background:${item.color || gradients[0]}">
-                ${escapeHtml(item.title || 'Untitled')}
-            </div>
-
-            <div class="card-body">
-                <span class="card-date">${escapeHtml(item.date || '')}</span>
-                <p class="card-desc">${escapeHtml(item.desc || '')}</p>
-
-                <div class="card-actions">
-                    ${
-                        currentTab !== 'deleted'
-                            ? `<button class="small-btn edit-btn" onclick="editEntry(${item.id})">Edit</button>
-                               <button class="small-btn delete-btn" onclick="deleteEntry(${item.id})">Delete</button>`
-                            : `<button class="small-btn restore-btn" onclick="restoreEntry(${item.id})">Restore</button>
-                               <button class="small-btn permanent-btn" onclick="permanentDelete(${item.id})">Delete Forever</button>`
-                    }
-                </div>
-            </div>
+  grid.innerHTML = [...data].reverse().map(item => `
+    <div class="card ${currentTab === 'deleted' ? 'deleted-card' : ''}">
+      <div class="card-header" style="background:${item.color || gradients[0]}">${escapeHtml(item.title || 'Untitled')}</div>
+      <div class="card-body">
+        <span class="card-date">${escapeHtml(item.date || '')}</span>
+        <p class="card-desc">${escapeHtml(item.desc || '')}</p>
+        <div class="card-actions">
+          ${currentTab !== 'deleted'
+            ? `<button class="small-btn edit-btn" onclick="editEntry(${item.id})">Edit</button>
+               <button class="small-btn delete-btn" onclick="deleteEntry(${item.id})">Delete</button>`
+            : `<button class="small-btn restore-btn" onclick="restoreEntry(${item.id})">Restore</button>
+               <button class="small-btn permanent-btn" onclick="permanentDelete(${item.id})">Delete Forever</button>`}
         </div>
-    `).join('');
+      </div>
+    </div>
+  `).join('');
 }
 
 function escapeHtml(str) {
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
 function editEntry(id) {
-    const item = getData().find(x => x.id === id);
-    if (!item) return;
-
-    editId = id;
-    document.getElementById('modalTitle').innerText = 'Edit Entry';
-    document.getElementById('title').value = item.title || '';
-    document.getElementById('desc').value = item.desc || '';
-    document.getElementById('date').value = item.date || getTodayLocalISO();
-    document.getElementById('entryType').value = item.type || 'moment';
-    document.getElementById('charCount').innerText = `${document.getElementById('title').value.length} / 45`;
-    document.getElementById('wordCount').innerText = `${document.getElementById('desc').value.length} / 1000`;
-    document.getElementById('entryOverlay').classList.add('show');
+  const item = getData().find(x => x.id === id);
+  if (!item) return;
+  editId = id;
+  document.getElementById('modalTitle').innerText = 'Edit Entry';
+  document.getElementById('title').value = item.title || '';
+  document.getElementById('desc').value = item.desc || '';
+  document.getElementById('date').value = item.date || getTodayLocalISO();
+  document.getElementById('entryType').value = item.type || 'moment';
+  document.getElementById('charCount').innerText = `${(item.title||'').length} / 45`;
+  document.getElementById('wordCount').innerText = `${(item.desc||'').length} / 1000`;
+  document.getElementById('entryOverlay').classList.add('show');
 }
 
 function deleteEntry(id) {
-    const data = getData();
-    const deleted = getDeleted();
-
-    const item = data.find(x => x.id === id);
-    if (!item) return;
-
-    const removed = { ...item, deletedAt: Date.now() };
-    deleted.push(removed);
-
-    const filtered = data.filter(x => x.id !== id);
-
-    saveMain(filtered);
-    saveDeleted(deleted);
-    loadData();
+  const data = getData(), deleted = getDeleted();
+  const item = data.find(x => x.id === id);
+  if (!item) return;
+  deleted.push({ ...item, deletedAt: Date.now() });
+  saveMain(data.filter(x => x.id !== id));
+  saveDeleted(deleted);
+  loadData();
 }
 
 function restoreEntry(id) {
-    const data = getData();
-    const deleted = getDeleted();
-
-    const item = deleted.find(x => x.id === id);
-    if (!item) return;
-
-    const restored = { ...item };
-    delete restored.deletedAt;
-
-    data.push(restored);
-
-    const filteredDeleted = deleted.filter(x => x.id !== id);
-
-    saveMain(data);
-    saveDeleted(filteredDeleted);
-    loadData();
+  const data = getData(), deleted = getDeleted();
+  const item = deleted.find(x => x.id === id);
+  if (!item) return;
+  const restored = { ...item };
+  delete restored.deletedAt;
+  data.push(restored);
+  saveMain(data);
+  saveDeleted(deleted.filter(x => x.id !== id));
+  loadData();
 }
 
 function permanentDelete(id) {
-    const deleted = getDeleted();
-    const filteredDeleted = deleted.filter(x => x.id !== id);
-    saveDeleted(filteredDeleted);
-    loadData();
+  saveDeleted(getDeleted().filter(x => x.id !== id));
+  loadData();
 }
 
 function deleteAllData() {
-    if (confirm('Delete ALL data permanently?')) {
-        localStorage.removeItem('echoData');
-        localStorage.removeItem('echoDeleted');
-        editId = null;
-        closeEntryOverlay();
-        loadData();
-    }
+  if (confirm('Delete ALL data permanently?')) {
+    localStorage.removeItem('echoData');
+    localStorage.removeItem('echoDeleted');
+    editId = null;
+    closeEntryOverlay();
+    loadData();
+  }
 }
 
 function toggleFullscreen() {
-    const textarea = document.getElementById('desc');
-
-    if (!document.fullscreenElement) {
-        textarea.requestFullscreen().catch(() => {});
-        textarea.style.background = '#020617';
-        textarea.style.padding = '30px';
-        textarea.style.fontSize = '1.1rem';
-    } else {
-        document.exitFullscreen();
-    }
+  const textarea = document.getElementById('desc');
+  if (!document.fullscreenElement) {
+    textarea.requestFullscreen().catch(() => {});
+    textarea.style.background = '#020617';
+    textarea.style.padding = '30px';
+    textarea.style.fontSize = '1.1rem';
+  } else {
+    document.exitFullscreen();
+  }
 }
 
 function exportBackup() {
-    const payload = getData();
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
+  const blob = new Blob([JSON.stringify(getData(), null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'daily-echo-backup.json'; a.click();
+  URL.revokeObjectURL(url);
+}
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'daily-echo-backup.json';
-    a.click();
-
-    URL.revokeObjectURL(url);
-} 
-
-   function toggleMobileMenu() {
+function toggleMobileMenu() {
   const m = document.getElementById('mobileMenu');
   m.style.display = m.style.display === 'none' ? 'block' : 'none';
 }
 
-// Close menu when clicking outside
 document.addEventListener('click', function(e) {
   const menu = document.getElementById('mobileMenu');
   if (!e.target.closest('#mobileMenu') && !e.target.closest('.mobile-menu-btn')) {
     menu.style.display = 'none';
   }
 });
-   
 </script>
-
-<footer style="margin-top:60px;padding:30px 20px;border-top:1px solid rgba(255,255,255,.08);text-align:center;color:#94a3b8;">
-Developed by Mohak
-</footer>
 </body>
 </html>
