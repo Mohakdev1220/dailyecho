@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Daily Echo | Your Personal Diary</title>
-    
+
     <style>
         :root {
             --primary: #6366f1;
@@ -15,174 +15,441 @@
             --text-white: #f8fafc;
             --success: #10b981;
             --warning: #f59e0b;
+            --danger: #ef4444;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
-            margin: 0; background: var(--bg-dark); color: var(--text-white);
-            font-family: 'Inter', -apple-system, sans-serif; overflow-x: hidden;
+            margin: 0;
+            background: var(--bg-dark);
+            color: var(--text-white);
+            font-family: 'Inter', -apple-system, sans-serif;
+            overflow-x: hidden;
         }
 
-        /* Dynamic Mesh Background */
         .bg-animate {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 0% 0%, #1e1b4b 0%, transparent 50%),
-                        radial-gradient(circle at 100% 100%, #312e81 0%, transparent 50%),
-                        radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background:
+                radial-gradient(circle at 0% 0%, #1e1b4b 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, #312e81 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
             animation: pulseBg 10s infinite alternate;
         }
-        @keyframes pulseBg { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
 
-        /* Header */
+        @keyframes pulseBg {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
         nav {
-            padding: 20px 25px; display: flex; justify-content: space-between;
-            align-items: center; background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border);
-            position: sticky; top: 0; z-index: 100;
-        }
-        .logo { font-size: 1.6rem; font-weight: 900; letter-spacing: -1px; 
-                background: linear-gradient(45deg, #818cf8, #c084fc); 
-                -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        /* Weather & Date Widget */
-        .top-widget {
-            max-width: 1200px; margin: 30px auto; padding: 0 20px;
-        }
-        .weather-card {
-            background: var(--glass); border: 1px solid var(--glass-border);
-            border-radius: 30px; padding: 30px; backdrop-filter: blur(10px);
-            display: grid; grid-template-columns: 1fr auto; gap: 30px;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .date-section h2 { margin: 0; font-size: 2rem; font-weight: 800; }
-        .date-section p { margin: 5px 0 0 0; color: #94a3b8; font-size: 1rem; }
-        .weather-section { text-align: right; }
-        .weather-temp { font-size: 3rem; font-weight: 800; margin: 0; }
-        .weather-desc { color: #94a3b8; margin: 5px 0 0 0; }
-        .weather-location { color: #64748b; font-size: 0.85rem; margin-top: 5px; }
 
-        /* Tabs */
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: linear-gradient(45deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .top-widget {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .date-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .date-section h2 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .date-section p {
+            margin: 5px 0 0 0;
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
         .tabs {
-            max-width: 1200px; margin: 20px auto; padding: 0 20px;
-            display: flex; gap: 15px;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
         }
+
         .tab {
-            padding: 12px 24px; background: var(--glass); border: 1px solid var(--glass-border);
-            border-radius: 20px; cursor: pointer; font-weight: 600; transition: 0.3s;
+            padding: 12px 24px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            user-select: none;
         }
-        .tab.active { background: var(--primary); border-color: var(--primary); }
-        .tab:hover { transform: translateY(-2px); }
 
-        /* Grid */
-        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+        .tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
 
-        /* Glass Card */
+        .tab:hover {
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
         .card {
-            background: var(--glass); border: 1px solid var(--glass-border);
-            border-radius: 30px; overflow: hidden; backdrop-filter: blur(10px);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
             transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            animation: fadeIn 0.8s ease backwards; position: relative;
+            animation: fadeIn 0.8s ease backwards;
+            position: relative;
         }
-        .card:hover { transform: translateY(-10px) scale(1.02); border-color: var(--primary); 
-                      background: rgba(99, 102, 241, 0.05); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         .card-header {
-            height: 130px; display: flex; align-items: center; justify-content: center;
-            padding: 25px; text-align: center; font-weight: 800; font-size: 1.3rem;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3); position: relative;
+            height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 1.3rem;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: relative;
         }
 
         .card-badge {
-            position: absolute; top: 15px; right: 15px; padding: 6px 12px;
-            background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
-            border-radius: 12px; font-size: 0.75rem; font-weight: 700;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 6px 12px;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
         }
 
-        .card-body { padding: 25px; }
-        .card-date { color: var(--primary); font-size: 0.8rem; font-weight: 800; 
-                     text-transform: uppercase; margin-bottom: 10px; display: block; }
-        .card-desc { color: #94a3b8; line-height: 1.6; font-size: 1rem; }
-
-        /* Target Card Specific */
-        .target-actions {
-            margin-top: 15px; display: flex; gap: 10px;
+        .card-body {
+            padding: 25px;
         }
+
+        .card-date {
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .card-desc {
+            color: #94a3b8;
+            line-height: 1.6;
+            font-size: 1rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .btn-row {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
         .btn-small {
-            flex: 1; padding: 10px; border-radius: 12px; border: none;
-            font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.3s;
+            flex: 1;
+            min-width: 110px;
+            padding: 10px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        .btn-complete { background: var(--success); color: white; }
-        .btn-complete:hover { filter: brightness(1.1); }
 
-        /* Delete Button on Cards */
+        .btn-complete {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-complete:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-restore {
+            background: var(--warning);
+            color: #111827;
+        }
+
+        .btn-restore:hover {
+            filter: brightness(1.05);
+        }
+
         .delete-btn {
-            position: absolute; top: 15px; left: 15px; width: 35px; height: 35px;
-            border-radius: 12px; background: rgba(239, 68, 68, 0.2);
-            border: none; color: #f87171; cursor: pointer; font-size: 18px;
-            opacity: 0; transition: 0.3s;
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 35px;
+            height: 35px;
+            border-radius: 12px;
+            background: rgba(239, 68, 68, 0.2);
+            border: none;
+            color: #f87171;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0;
+            transition: 0.3s;
+            z-index: 2;
         }
-        .card:hover .delete-btn { opacity: 1; }
-        .delete-btn:hover { background: rgba(239, 68, 68, 0.4); }
 
-        /* Interactive Bottom Sheets (Modals) */
+        .card:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.4);
+        }
+
+        .edit-btn {
+            position: absolute;
+            top: 15px;
+            left: 60px;
+            width: 35px;
+            height: 35px;
+            border-radius: 12px;
+            background: rgba(59, 130, 246, 0.2);
+            border: none;
+            color: #60a5fa;
+            cursor: pointer;
+            opacity: 0;
+            transition: 0.3s;
+            z-index: 2;
+        }
+
+        .card:hover .edit-btn {
+            opacity: 1;
+        }
+
+        .edit-btn:hover {
+            background: rgba(59, 130, 246, 0.4);
+        }
+
+        .lock-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.07);
+            color: #e2e8f0;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .lock-btn:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
         .overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(8px); display: none; align-items: flex-end; z-index: 1000;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: flex-end;
+            z-index: 1000;
         }
-        .overlay.show { display: flex; }
-        
-        .modal {
-            background: #0f172a; width: 100%; max-width: 600px; margin: 0 auto;
-            border-radius: 40px 40px 0 0; padding: 40px 30px;
-            transform: translateY(100%); transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            max-height: 85vh; overflow-y: auto;
-        }
-        .modal.active { transform: translateY(0); }
 
-        /* Inputs & Buttons */
-        input, textarea, select {
-            width: 100%; background: #1e293b; border: 1px solid var(--glass-border);
-            border-radius: 20px; padding: 18px; color: white; font-size: 1rem;
-            margin-bottom: 15px; outline: none; transition: 0.3s;
+        .overlay.show {
+            display: flex;
         }
-        input:focus, textarea:focus, select:focus { 
-            border-color: var(--primary); 
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2); 
+
+        .modal {
+            background: #0f172a;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 40px 40px 0 0;
+            padding: 40px 30px;
+            transform: translateY(100%);
+            transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            transform: translateY(0);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            background: #1e293b;
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 18px;
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
         }
 
         .btn {
-            width: 100%; padding: 18px; border-radius: 20px; border: none;
-            font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.3s;
+            width: 100%;
+            padding: 18px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        .btn-main { background: var(--primary); color: white; 
-                    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4); }
-        .btn-main:hover { transform: scale(1.02); filter: brightness(1.1); }
+
+        .btn-main {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-main:hover {
+            transform: scale(1.02);
+            filter: brightness(1.1);
+        }
 
         .fab {
-            position: fixed; bottom: 40px; right: 30px; width: 75px; height: 75px;
-            border-radius: 24px; background: var(--primary); color: white; border: none;
-            font-size: 35px; cursor: pointer; box-shadow: 0 20px 40px rgba(99, 102, 241, 0.5);
-            transition: 0.3s; z-index: 99;
+            position: fixed;
+            bottom: 40px;
+            right: 30px;
+            width: 75px;
+            height: 75px;
+            border-radius: 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.5);
+            transition: 0.3s;
+            z-index: 99;
         }
-        .fab:hover { transform: rotate(90deg) scale(1.1); }
+
+        .fab:hover {
+            transform: rotate(90deg) scale(1.08);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .empty-state .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .private-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            margin-bottom: 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.07);
+            color: #cbd5e1;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
 
         @media (max-width: 768px) {
-            .weather-card { grid-template-columns: 1fr; text-align: center; }
-            .weather-section { text-align: center; }
-            .tabs { flex-wrap: wrap; }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                gap: 10px;
+            }
+
+            .weather-card,
+            .date-card {
+                padding: 24px;
+            }
+
+            .fab {
+                right: 18px;
+                bottom: 18px;
+            }
         }
     </style>
 </head>
 <body>
-
     <div class="bg-animate"></div>
 
     <nav>
-        <div class="logo">ECHO</div>
+        <div class="logo">DailyECHO</div>
         <div style="display: flex; gap: 15px; align-items: center;">
             <span id="storageInfo" style="font-size: 0.85rem; color: #94a3b8;"></span>
             <button onclick="exportData()" style="background:none; border:none; font-size: 24px; cursor:pointer;" title="Export Data">💾</button>
@@ -190,23 +457,18 @@
     </nav>
 
     <div class="top-widget">
-        <div class="weather-card">
+        <div class="date-card">
             <div class="date-section">
                 <h2 id="currentDate">Loading...</h2>
                 <p id="currentDay">...</p>
-            </div>
-            <div class="weather-section">
-                <div class="weather-temp" id="weatherTemp">--°</div>
-                <div class="weather-desc" id="weatherDesc">Loading weather...</div>
-                <div class="weather-location" id="weatherLocation">📍 Detecting location...</div>
             </div>
         </div>
     </div>
 
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('targets', event)">🎯 Daily Targets</div>
-        <div class="tab" onclick="switchTab('moments', event)">✨ Special Moments</div>
+        <div class="tab active" onclick="switchTab('moments', event)">✨ Special Moments</div>
         <div class="tab" onclick="switchTab('notes', event)">📝 Notes</div>
+        <div class="tab" onclick="switchTab('deleted', event)">🗑️ Recently Deleted</div>
     </div>
 
     <div class="container">
@@ -215,27 +477,34 @@
 
     <button class="fab" onclick="openAddSheet()">+</button>
 
-    <!-- Add Entry Sheet -->
     <div class="overlay" id="addSheet" onclick="closeSheet(event, 'addSheet')">
         <div class="modal" onclick="event.stopPropagation()">
             <h1 style="margin-top:0" id="modalTitle">New Entry</h1>
-            
+
             <select id="entryType">
-                <option value="target">🎯 Daily Target</option>
                 <option value="moment">✨ Special Moment</option>
                 <option value="note">📝 Note</option>
             </select>
 
-            <input type="text" id="title" placeholder="Title (Max 45 characters)" maxlength="45">
-            <input type="date" id="date">
+            <input type="text" id="title" placeholder="Title (Max 45 characters)" maxlength="45" />
+            <input type="date" id="date" />
             <textarea id="desc" rows="5" placeholder="Description..."></textarea>
-            
+
+            <label style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+                <input type="checkbox" id="isPrivate" style="width:auto;" />
+                🔒 Private Entry
+            </label>
+
             <button class="btn btn-main" onclick="saveEntry()">Save Locally</button>
         </div>
     </div>
 
     <script>
-        let currentTab = 'targets';
+        let currentTab = 'moments';
+        let sessionPassword = null;
+        let editingEntryId = null;
+        const unlockedPrivateIds = new Set();
+
         const gradients = [
             'linear-gradient(135deg, #6366f1, #a855f7)',
             'linear-gradient(135deg, #3b82f6, #2dd4bf)',
@@ -245,117 +514,181 @@
             'linear-gradient(135deg, #8b5cf6, #ec4899)'
         ];
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
+        const encoder = new TextEncoder();
+        const decoder = new TextDecoder();
+
+        document.addEventListener('DOMContentLoaded', async () => {
             updateDateTime();
-            setInterval(updateDateTime, 60000); // Update every minute
-            loadWeather();
+            setInterval(updateDateTime, 60000);
             setTodayDate();
-            loadData();
+            await initializePasswordIfNeeded();
+            cleanDeletedEntries();
             updateStorageInfo();
+            await loadData();
         });
 
-        // Date & Time
+        function getTodayLocalISO() {
+            const now = new Date();
+            const tzOffset = now.getTimezoneOffset() * 60000;
+            return new Date(now.getTime() - tzOffset).toISOString().split('T')[0];
+        }
+
         function updateDateTime() {
             const now = new Date();
-            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-            document.getElementById('currentDay').textContent = now.toLocaleDateString('en-US', { weekday: 'long' });
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', {
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric'
+            });
+            document.getElementById('currentDay').textContent = now.toLocaleDateString('en-US', {
+                weekday: 'long'
+            });
         }
 
         function setTodayDate() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('date').value = today;
+            document.getElementById('date').value = getTodayLocalISO();
         }
 
-        // Weather with Geolocation
-        async function loadWeather() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    async (position) => {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        await fetchWeather(lat, lon);
-                    },
-                    (error) => {
-                        console.log('Location access denied:', error);
-                        document.getElementById('weatherLocation').textContent = '📍 Location access denied';
-                        loadDefaultWeather();
+        async function sha256Hex(text) {
+            const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(text));
+            return [...new Uint8Array(hashBuffer)]
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
+        async function initializePasswordIfNeeded() {
+            const storedHash = localStorage.getItem('echoPasswordHash');
+            if (!storedHash) {
+                while (true) {
+                    const pass = prompt('Create a password for private entries:');
+                    if (pass === null) {
+                        alert('Password is required to use private entries.');
+                        continue;
                     }
-                );
-            } else {
-                document.getElementById('weatherLocation').textContent = '📍 Geolocation not supported';
-                loadDefaultWeather();
+                    if (pass.trim().length < 4) {
+                        alert('Password must be at least 4 characters.');
+                        continue;
+                    }
+                    localStorage.setItem('echoPasswordHash', await sha256Hex(pass));
+                    sessionPassword = pass;
+                    alert('Password created successfully.');
+                    break;
+                }
             }
         }
 
-        async function fetchWeather(lat, lon) {
-            try {
-                // Using Open-Meteo API (free, no API key required)
-                const weatherResponse = await fetch(
-                    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`
-                );
-                const weatherData = await weatherResponse.json();
+        async function verifyPassword() {
+            const storedHash = localStorage.getItem('echoPasswordHash');
+            if (!storedHash) return null;
 
-                // Get location name using reverse geocoding
-                const geoResponse = await fetch(
-                    `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
-                );
-                const geoData = await geoResponse.json();
-
-                const temp = Math.round(weatherData.current.temperature_2m);
-                const weatherCode = weatherData.current.weather_code;
-                const weatherDesc = getWeatherDescription(weatherCode);
-                
-                const city = geoData.address.city || geoData.address.town || geoData.address.village || geoData.address.state || 'Your Location';
-
-                document.getElementById('weatherTemp').textContent = temp + '°C';
-                document.getElementById('weatherDesc').textContent = weatherDesc;
-                document.getElementById('weatherLocation').textContent = `📍 ${city}`;
-            } catch (error) {
-                console.error('Weather fetch error:', error);
-                loadDefaultWeather();
+            if (sessionPassword && (await sha256Hex(sessionPassword)) === storedHash) {
+                return sessionPassword;
             }
+
+            const pass = prompt('Enter password:');
+            if (pass === null) return null;
+
+            const hash = await sha256Hex(pass);
+            if (hash !== storedHash) {
+                alert('Wrong password.');
+                return null;
+            }
+
+            sessionPassword = pass;
+            return pass;
         }
 
-        function getWeatherDescription(code) {
-            const weatherCodes = {
-                0: 'Clear Sky',
-                1: 'Mainly Clear',
-                2: 'Partly Cloudy',
-                3: 'Overcast',
-                45: 'Foggy',
-                48: 'Foggy',
-                51: 'Light Drizzle',
-                53: 'Drizzle',
-                55: 'Heavy Drizzle',
-                61: 'Light Rain',
-                63: 'Rain',
-                65: 'Heavy Rain',
-                71: 'Light Snow',
-                73: 'Snow',
-                75: 'Heavy Snow',
-                77: 'Snow Grains',
-                80: 'Light Showers',
-                81: 'Showers',
-                82: 'Heavy Showers',
-                85: 'Light Snow Showers',
-                86: 'Snow Showers',
-                95: 'Thunderstorm',
-                96: 'Thunderstorm with Hail',
-                99: 'Thunderstorm with Hail'
+        async function encryptText(text, password) {
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+
+            const baseKey = await crypto.subtle.importKey(
+                'raw',
+                encoder.encode(password),
+                'PBKDF2',
+                false,
+                ['deriveKey']
+            );
+
+            const key = await crypto.subtle.deriveKey(
+                {
+                    name: 'PBKDF2',
+                    salt,
+                    iterations: 100000,
+                    hash: 'SHA-256'
+                },
+                baseKey,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['encrypt']
+            );
+
+            const cipherBuffer = await crypto.subtle.encrypt(
+                { name: 'AES-GCM', iv },
+                key,
+                encoder.encode(text)
+            );
+
+            return {
+                salt: arrayBufferToBase64(salt),
+                iv: arrayBufferToBase64(iv),
+                data: arrayBufferToBase64(new Uint8Array(cipherBuffer))
             };
-            return weatherCodes[code] || 'Unknown';
         }
 
-        function loadDefaultWeather() {
-            document.getElementById('weatherTemp').textContent = '25°C';
-            document.getElementById('weatherDesc').textContent = 'Clear Sky';
-            if (!document.getElementById('weatherLocation').textContent.includes('📍')) {
-                document.getElementById('weatherLocation').textContent = '📍 Default Location';
+        async function decryptText(bundle, password) {
+            const salt = base64ToUint8Array(bundle.salt);
+            const iv = base64ToUint8Array(bundle.iv);
+            const data = base64ToUint8Array(bundle.data);
+
+            const baseKey = await crypto.subtle.importKey(
+                'raw',
+                encoder.encode(password),
+                'PBKDF2',
+                false,
+                ['deriveKey']
+            );
+
+            const key = await crypto.subtle.deriveKey(
+                {
+                    name: 'PBKDF2',
+                    salt,
+                    iterations: 100000,
+                    hash: 'SHA-256'
+                },
+                baseKey,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['decrypt']
+            );
+
+            const plainBuffer = await crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv },
+                key,
+                data
+            );
+
+            return decoder.decode(plainBuffer);
+        }
+
+        function arrayBufferToBase64(arr) {
+            let binary = '';
+            const bytes = arr instanceof Uint8Array ? arr : new Uint8Array(arr);
+            for (let i = 0; i < bytes.length; i++) {
+                binary += String.fromCharCode(bytes[i]);
             }
+            return btoa(binary);
         }
 
-        // Tab Switching
+        function base64ToUint8Array(base64) {
+            const binary = atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes;
+        }
+
         function switchTab(tab, event) {
             currentTab = tab;
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -363,15 +696,18 @@
             loadData();
         }
 
-        // Modal Management
         function openAddSheet() {
             const overlay = document.getElementById('addSheet');
             const modal = overlay.querySelector('.modal');
-            
-            // Set entry type based on current tab
-            document.getElementById('entryType').value = currentTab === 'targets' ? 'target' : currentTab === 'moments' ? 'moment' : 'note';
+
+            editingEntryId = null;
+            document.getElementById('modalTitle').textContent = 'New Entry';
+            document.getElementById('entryType').value = currentTab === 'notes' ? 'note' : 'moment';
+            document.getElementById('title').value = '';
+            document.getElementById('desc').value = '';
+            document.getElementById('isPrivate').checked = false;
             setTodayDate();
-            
+
             overlay.classList.add('show');
             setTimeout(() => modal.classList.add('active'), 10);
         }
@@ -385,144 +721,372 @@
             }
         }
 
-        // Save Entry
-        function saveEntry() {
+        async function saveEntry() {
             const title = document.getElementById('title').value.trim();
             const date = document.getElementById('date').value;
             const desc = document.getElementById('desc').value.trim();
             const type = document.getElementById('entryType').value;
+            const isPrivate = document.getElementById('isPrivate').checked;
 
             if (!title || !date || !desc) {
-                alert('Please fill all fields!');
+                alert('Please fill all fields.');
+                return;
+            }
+
+            let data = JSON.parse(localStorage.getItem('echoData') || '[]');
+
+            if (editingEntryId) {
+                const entryIndex = data.findIndex(item => item.id === editingEntryId);
+                if (entryIndex === -1) return;
+
+                const existing = data[entryIndex];
+                const entry = {
+                    ...existing,
+                    title,
+                    date,
+                    desc,
+                    type,
+                    private: isPrivate,
+                    color: existing.color || gradients[Math.floor(Math.random() * gradients.length)],
+                    created: existing.created || new Date().toISOString(),
+                    completed: existing.completed || false
+                };
+
+                if (isPrivate) {
+                    const password = await verifyPassword();
+                    if (!password) return;
+
+                    entry.private = true;
+                    entry.encryptedTitle = await encryptText(title, password);
+                    entry.encryptedDesc = await encryptText(desc, password);
+                    entry.title = 'Private Entry';
+                    entry.desc = '';
+                } else {
+                    delete entry.encryptedTitle;
+                    delete entry.encryptedDesc;
+                    entry.title = title;
+                    entry.desc = desc;
+                }
+
+                data[entryIndex] = entry;
+                localStorage.setItem('echoData', JSON.stringify(data));
+                closeAddSheet();
+                await loadData();
+                updateStorageInfo();
                 return;
             }
 
             const entry = {
                 id: Date.now(),
-                title,
+                title: isPrivate ? 'Private Entry' : title,
                 date,
-                desc,
+                desc: isPrivate ? '' : desc,
                 type,
                 color: gradients[Math.floor(Math.random() * gradients.length)],
                 created: new Date().toISOString(),
-                completed: false
+                completed: false,
+                private: isPrivate
             };
 
-            // Get existing data
-            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
+            if (isPrivate) {
+                const password = await verifyPassword();
+                if (!password) return;
+
+                entry.encryptedTitle = await encryptText(title, password);
+                entry.encryptedDesc = await encryptText(desc, password);
+            }
+
             data.push(entry);
             localStorage.setItem('echoData', JSON.stringify(data));
 
-            // Clear form
-            document.getElementById('title').value = '';
-            document.getElementById('desc').value = '';
-            
-            // Close modal
+            closeAddSheet();
+            await loadData();
+            updateStorageInfo();
+        }
+
+        function closeAddSheet() {
             const overlay = document.getElementById('addSheet');
             const modal = overlay.querySelector('.modal');
             modal.classList.remove('active');
             setTimeout(() => overlay.classList.remove('show'), 400);
-            
-            loadData();
-            updateStorageInfo();
         }
 
-        // Load Data
-        function loadData() {
-            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
-            const filtered = data.filter(item => item.type === currentTab.slice(0, -1));
-            
+        async function loadData() {
+            cleanDeletedEntries();
             const grid = document.getElementById('mainGrid');
-            
+            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
+            const deleted = JSON.parse(localStorage.getItem('recentlyDeleted') || '[]');
+
+            let filtered = [];
+            if (currentTab === 'deleted') {
+                filtered = deleted.slice().sort((a, b) => new Date(b.deletedAt) - new Date(a.deletedAt));
+            } else {
+                filtered = data
+                    .filter(item => item.type === currentTab.slice(0, -1))
+                    .sort((a, b) => new Date(b.created) - new Date(a.created));
+            }
+
             if (filtered.length === 0) {
                 grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: #64748b;">
-                        <div style="font-size: 4rem; margin-bottom: 20px;">📝</div>
+                    <div class="empty-state">
+                        <div class="icon">📝</div>
                         <h3>No entries yet</h3>
-                        <p>Click the + button to add your first ${currentTab.slice(0, -1)}</p>
+                        <p>${currentTab === 'deleted' ? 'Nothing in Recently Deleted.' : 'Click the + button to add your first entry.'}</p>
                     </div>
                 `;
+                updateStorageInfo();
                 return;
             }
 
-            grid.innerHTML = filtered.sort((a, b) => new Date(b.created) - new Date(a.created)).map(item => {
-                const badge = item.type === 'target' ? '🎯' : item.type === 'moment' ? '✨' : '📝';
-                
-                if (item.type === 'target') {
-                    return `
-                        <div class="card">
-                            <button class="delete-btn" onclick="deleteEntry(${item.id}, event)">×</button>
-                            <div class="card-header" style="background: ${item.color}">
-                                <span class="card-badge">${badge}</span>
-                                ${item.title}
-                            </div>
-                            <div class="card-body">
-                                <span class="card-date">${item.date}</span>
-                                <p class="card-desc">${item.desc}</p>
-                                ${item.completed ? '<p style="color: #10b981; font-weight: 700; margin-top: 10px;">✓ Completed</p>' : `
-                                    <div class="target-actions">
-                                        <button class="btn-small btn-complete" onclick="completeTarget(${item.id}, event)">✓ Complete</button>
-                                    </div>
-                                `}
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    return `
-                        <div class="card">
-                            <button class="delete-btn" onclick="deleteEntry(${item.id}, event)">×</button>
-                            <div class="card-header" style="background: ${item.color}">
-                                <span class="card-badge">${badge}</span>
-                                ${item.title}
-                            </div>
-                            <div class="card-body">
-                                <span class="card-date">${item.date}</span>
-                                <p class="card-desc">${item.desc}</p>
-                            </div>
-                        </div>
-                    `;
-                }
-            }).join('');
+            const rendered = await Promise.all(filtered.map(item => renderCard(item)));
+            grid.innerHTML = rendered.join('');
+            updateStorageInfo();
         }
 
-        // Complete Target
-        function completeTarget(id, event) {
-            event.stopPropagation();
-            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
-            const entry = data.find(item => item.id === id);
-            if (entry) {
-                entry.completed = true;
-                localStorage.setItem('echoData', JSON.stringify(data));
-                loadData();
+        async function renderCard(item) {
+            const badge = item.type === 'moment' ? '✨' : '📝';
+
+            if (currentTab === 'deleted') {
+                const title = item.private ? '🔒 Private Entry' : escapeHtml(item.title || 'Untitled');
+                const dateText = item.date || 'Unknown date';
+
+                return `
+                    <div class="card">
+                        <div class="card-header" style="background: ${item.color || gradients[0]}">
+                            <span class="card-badge">${badge}</span>
+                            ${title}
+                        </div>
+                        <div class="card-body">
+                            <span class="card-date">Deleted: ${formatDateTime(item.deletedAt)}</span>
+                            <p class="card-desc">${item.private ? 'This item is locked.' : escapeHtml(item.desc || '')}</p>
+                            <div class="btn-row">
+                                <button class="btn-small btn-restore" onclick="restoreEntry(${item.id}, event)">♻ Restore</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            let title = item.title || 'Untitled';
+            let desc = item.desc || '';
+
+            if (item.private) {
+                if (unlockedPrivateIds.has(item.id)) {
+                    const password = sessionPassword || await verifyPassword();
+                    if (password) {
+                        try {
+                            title = await decryptText(item.encryptedTitle, password);
+                            desc = await decryptText(item.encryptedDesc, password);
+                        } catch (e) {
+                            title = 'Locked Entry';
+                            desc = 'Unable to decrypt. Check password.';
+                        }
+                    } else {
+                        title = 'Locked Entry';
+                        desc = 'Password required.';
+                    }
+                } else {
+                    title = '🔒 Private Entry';
+                    desc = 'Tap unlock to view this entry.';
+                }
+            }
+
+            return `
+                <div class="card">
+                    <button class="delete-btn" onclick="deleteEntry(${item.id}, event)">×</button>
+                    <button class="edit-btn" onclick="renameEntry(${item.id}, event)">✏️</button>
+
+                    <div class="card-header" style="background: ${item.color || gradients[0]}">
+                        <span class="card-badge">${badge}</span>
+                        ${escapeHtml(title)}
+                    </div>
+
+                    <div class="card-body">
+                        <span class="card-date">${item.date}</span>
+
+                        ${item.private ? `
+                            <div class="private-pill">🔒 Private</div>
+                            ${unlockedPrivateIds.has(item.id) ? `
+                                <p class="card-desc">${escapeHtml(desc)}</p>
+                            ` : `
+                                <button class="lock-btn" onclick="unlockEntry(${item.id}, event)">Unlock</button>
+                            `}
+                        ` : `
+                            <p class="card-desc">${escapeHtml(desc)}</p>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function formatDateTime(ms) {
+            try {
+                return new Date(ms).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            } catch {
+                return 'Unknown';
             }
         }
 
-        // Delete Entry
+        function completeTarget() {
+            return;
+        }
+
+        async function unlockEntry(id, event) {
+            event.stopPropagation();
+
+            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
+            const entry = data.find(item => item.id === id);
+            if (!entry || !entry.private) return;
+
+            const password = await verifyPassword();
+            if (!password) return;
+
+            try {
+                await decryptText(entry.encryptedTitle, password);
+                await decryptText(entry.encryptedDesc, password);
+                unlockedPrivateIds.add(id);
+                await loadData();
+            } catch (e) {
+                alert('Wrong password.');
+            }
+        }
+
+        async function renameEntry(id, event) {
+            event.stopPropagation();
+
+            if (currentTab === 'deleted') {
+                alert('Restore the entry first to rename it.');
+                return;
+            }
+
+            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
+            const entry = data.find(item => item.id === id);
+            if (!entry) return;
+
+            let currentTitle = entry.title || 'Untitled';
+
+            if (entry.private) {
+                const password = await verifyPassword();
+                if (!password) return;
+                try {
+                    currentTitle = await decryptText(entry.encryptedTitle, password);
+                } catch {
+                    alert('Wrong password.');
+                    return;
+                }
+            }
+
+            const newTitle = prompt('Rename entry title:', currentTitle);
+            if (!newTitle || !newTitle.trim()) return;
+
+            const cleanTitle = newTitle.trim();
+
+            if (entry.private) {
+                const password = await verifyPassword();
+                if (!password) return;
+
+                entry.encryptedTitle = await encryptText(cleanTitle, password);
+                entry.title = 'Private Entry';
+                unlockedPrivateIds.add(id);
+            } else {
+                entry.title = cleanTitle;
+            }
+
+            localStorage.setItem('echoData', JSON.stringify(data));
+            await loadData();
+        }
+
         function deleteEntry(id, event) {
             event.stopPropagation();
-            if (!confirm('Delete this entry?')) return;
-            
+
+            if (!confirm('Move this entry to Recently Deleted?')) return;
+
             const data = JSON.parse(localStorage.getItem('echoData') || '[]');
+            const deleted = JSON.parse(localStorage.getItem('recentlyDeleted') || '[]');
+
+            const entry = data.find(item => item.id === id);
+            if (!entry) return;
+
+            entry.deletedAt = Date.now();
+            deleted.push(entry);
+
             const filtered = data.filter(item => item.id !== id);
+
             localStorage.setItem('echoData', JSON.stringify(filtered));
+            localStorage.setItem('recentlyDeleted', JSON.stringify(deleted));
+
+            unlockedPrivateIds.delete(id);
             loadData();
             updateStorageInfo();
         }
 
-        // Storage Info
-        function updateStorageInfo() {
+        function restoreEntry(id, event) {
+            event.stopPropagation();
+
+            const deleted = JSON.parse(localStorage.getItem('recentlyDeleted') || '[]');
             const data = JSON.parse(localStorage.getItem('echoData') || '[]');
-            document.getElementById('storageInfo').textContent = `${data.length} entries`;
+
+            const entry = deleted.find(item => item.id === id);
+            if (!entry) return;
+
+            delete entry.deletedAt;
+            data.push(entry);
+
+            const filteredDeleted = deleted.filter(item => item.id !== id);
+
+            localStorage.setItem('echoData', JSON.stringify(data));
+            localStorage.setItem('recentlyDeleted', JSON.stringify(filteredDeleted));
+
+            loadData();
+            updateStorageInfo();
         }
 
-        // Export Data
+        function cleanDeletedEntries() {
+            const deleted = JSON.parse(localStorage.getItem('recentlyDeleted') || '[]');
+            const now = Date.now();
+
+            const valid = deleted.filter(item => {
+                if (!item.deletedAt) return false;
+                return now - item.deletedAt < 15 * 24 * 60 * 60 * 1000;
+            });
+
+            if (valid.length !== deleted.length) {
+                localStorage.setItem('recentlyDeleted', JSON.stringify(valid));
+            }
+        }
+
+        function updateStorageInfo() {
+            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
+            const deleted = JSON.parse(localStorage.getItem('recentlyDeleted') || '[]');
+            document.getElementById('storageInfo').textContent = `${data.length} entries • ${deleted.length} deleted`;
+        }
+
         function exportData() {
-            const data = localStorage.getItem('echoData') || '[]';
-            const blob = new Blob([data], { type: 'application/json' });
+            const payload = {
+                echoData: JSON.parse(localStorage.getItem('echoData') || '[]'),
+                recentlyDeleted: JSON.parse(localStorage.getItem('recentlyDeleted') || '[]'),
+                echoPasswordHash: localStorage.getItem('echoPasswordHash') || null,
+                exportedAt: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `echo-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = `echo-backup-${getTodayLocalISO()}.json`;
             a.click();
             URL.revokeObjectURL(url);
             alert('Data exported successfully!');
