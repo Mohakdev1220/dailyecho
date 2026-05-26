@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback | DailyEcho  </title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --google-blue: #4285F4;
+            --google-red: #EA4335;
+            --google-yellow: #FBBC05;
+            --google-green: #34A853;
+            --school-red: #f44336;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        header {
+            background: white;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .home-btn {
+            text-decoration: none;
+            color: white;
+            background: var(--school-red);
+            padding: 8px 20px;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Form Container */
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            border-top: 8px solid var(--google-blue);
+        }
+
+        h1 { color: #202124; font-size: 1.8rem; margin-bottom: 10px; }
+        p { color: #5f6368; margin-bottom: 25px; }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; color: #3c4043; }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        textarea { height: 120px; resize: vertical; }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border: 2px solid var(--google-blue);
+        }
+
+        .submit-btn {
+            background: var(--google-blue);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .submit-btn:hover { background: #3367d6; }
+
+        footer { text-align: center; padding: 20px; color: #70757a; font-size: 0.8rem; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="font-weight: 600;"> DailyEcho feedback </div>
+        <a href="index.html" class="home-btn">← Home Page </a>
+    </header>
+
+    <div class="container">
+        <h1>Website Feedback</h1>
+        <p>Your suggestions help us make the DailyEcho better!</p>
+
+      <form id="my-form" action="https://formspree.io/f/xkowpdnv" method="POST">
+            
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" name="name" placeholder="Enter your name" required>
+            </div>
+
+        
+
+                <div class="form-group">
+                <label>Feedback Category</label>
+                <select name="category">
+                    <option value="general">General Feedback</option>
+          
+                    <option value="fees"> Info Correction</option>
+                <option value="suggestion">New Feature Suggestion</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Rate our website (1-5)</label>
+                <select name="rating">
+                    <option value="5">⭐⭐⭐⭐⭐ (Excellent)</option>
+                    <option value="4">⭐⭐⭐⭐ (Good)</option>
+                    <option value="3">⭐⭐⭐ (Average)</option>
+                    <option value="2">⭐⭐ (Needs Work)</option>
+                    <option value="1">⭐ (Poor)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Your Message / Suggestion</label>
+                <textarea name="message" placeholder="Tell us what you think..." required></textarea>
+            </div>
+
+            <input type="hidden" name="_subject" value="New Feedback from toolify!"> 
+           <input type="hidden" name="_next" value="https://mohakdev1220.github.io/toolify/thanks">
+
+<button type="submit" class="submit-btn">Send Feedback</button>
+  
+
+</form>
+    </div>
+
+    <footer>
+    Your feeback help us improve 
+    </footer>
+
+</body>
+</html>
