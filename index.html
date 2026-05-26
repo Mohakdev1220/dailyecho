@@ -3,10 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Echo | Your Personal Diary</title> 
-     <link rel="stylesheet" href="assets/Index.css">
+    <title>Daily Echo | Your Personal Diary</title>
     
-    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --bg-dark: #020617;
+            --text-white: #f8fafc;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0; background: var(--bg-dark); color: var(--text-white);
+            font-family: 'Inter', -apple-system, sans-serif; overflow-x: hidden;
+        }
+
+        /* Dynamic Mesh Background */
+        .bg-animate {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 0% 0%, #1e1b4b 0%, transparent 50%),
+                        radial-gradient(circle at 100% 100%, #312e81 0%, transparent 50%),
+                        radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+            animation: pulseBg 10s infinite alternate;
+        }
+        @keyframes pulseBg { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+
+        /* Header */
+        nav {
+            padding: 20px 25px; display: flex; justify-content: space-between;
+            align-items: center; background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-size: 1.6rem; font-weight: 900; letter-spacing: -1px; 
+                background: linear-gradient(45deg, #818cf8, #c084fc); 
+                -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Weather & Date Widget */
+        .top-widget {
+            max-width: 1200px; margin: 30px auto; padding: 0 20px;
+        }
+        .weather-card {
+            background: var(--glass); border: 1px solid var(--glass-border);
+            border-radius: 30px; padding: 30px; backdrop-filter: blur(10px);
+            display: grid; grid-template-columns: 1fr auto; gap: 30px;
+            align-items: center;
+        }
+        .date-section h2 { margin: 0; font-size: 2rem; font-weight: 800; }
+        .date-section p { margin: 5px 0 0 0; color: #94a3b8; font-size: 1rem; }
+        .weather-section { text-align: right; }
+        .weather-temp { font-size: 3rem; font-weight: 800; margin: 0; }
+        .weather-desc { color: #94a3b8; margin: 5px 0 0 0; }
+        .weather-location { color: #64748b; font-size: 0.85rem; margin-top: 5px; }
+
+        /* Tabs */
+        .tabs {
+            max-width: 1200px; margin: 20px auto; padding: 0 20px;
+            display: flex; gap: 15px;
+        }
+        .tab {
+            padding: 12px 24px; background: var(--glass); border: 1px solid var(--glass-border);
+            border-radius: 20px; cursor: pointer; font-weight: 600; transition: 0.3s;
+        }
+        .tab.active { background: var(--primary); border-color: var(--primary); }
+        .tab:hover { transform: translateY(-2px); }
+
+        /* Grid */
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+
+        /* Glass Card */
+        .card {
+            background: var(--glass); border: 1px solid var(--glass-border);
+            border-radius: 30px; overflow: hidden; backdrop-filter: blur(10px);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            animation: fadeIn 0.8s ease backwards; position: relative;
+        }
+        .card:hover { transform: translateY(-10px) scale(1.02); border-color: var(--primary); 
+                      background: rgba(99, 102, 241, 0.05); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card-header {
+            height: 130px; display: flex; align-items: center; justify-content: center;
+            padding: 25px; text-align: center; font-weight: 800; font-size: 1.3rem;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3); position: relative;
+        }
+
+        .card-badge {
+            position: absolute; top: 15px; right: 15px; padding: 6px 12px;
+            background: rgba(0,0,0,0.4); backdrop-filter: blur(10px);
+            border-radius: 12px; font-size: 0.75rem; font-weight: 700;
+        }
+
+        .card-body { padding: 25px; }
+        .card-date { color: var(--primary); font-size: 0.8rem; font-weight: 800; 
+                     text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .card-desc { color: #94a3b8; line-height: 1.6; font-size: 1rem; }
+
+        /* Target Card Specific */
+        .target-actions {
+            margin-top: 15px; display: flex; gap: 10px;
+        }
+        .btn-small {
+            flex: 1; padding: 10px; border-radius: 12px; border: none;
+            font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: 0.3s;
+        }
+        .btn-complete { background: var(--success); color: white; }
+        .btn-complete:hover { filter: brightness(1.1); }
+
+        /* Delete Button on Cards */
+        .delete-btn {
+            position: absolute; top: 15px; left: 15px; width: 35px; height: 35px;
+            border-radius: 12px; background: rgba(239, 68, 68, 0.2);
+            border: none; color: #f87171; cursor: pointer; font-size: 18px;
+            opacity: 0; transition: 0.3s;
+        }
+        .card:hover .delete-btn { opacity: 1; }
+        .delete-btn:hover { background: rgba(239, 68, 68, 0.4); }
+
+        /* Interactive Bottom Sheets (Modals) */
+        .overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px); display: none; align-items: flex-end; z-index: 1000;
+        }
+        .overlay.show { display: flex; }
+        
+        .modal {
+            background: #0f172a; width: 100%; max-width: 600px; margin: 0 auto;
+            border-radius: 40px 40px 0 0; padding: 40px 30px;
+            transform: translateY(100%); transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 85vh; overflow-y: auto;
+        }
+        .modal.active { transform: translateY(0); }
+
+        /* Inputs & Buttons */
+        input, textarea, select {
+            width: 100%; background: #1e293b; border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 18px; color: white; font-size: 1rem;
+            margin-bottom: 15px; outline: none; transition: 0.3s;
+        }
+        input:focus, textarea:focus, select:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2); 
+        }
+
+        .btn {
+            width: 100%; padding: 18px; border-radius: 20px; border: none;
+            font-weight: 800; font-size: 1rem; cursor: pointer; transition: 0.3s;
+        }
+        .btn-main { background: var(--primary); color: white; 
+                    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4); }
+        .btn-main:hover { transform: scale(1.02); filter: brightness(1.1); }
+
+        .fab {
+            position: fixed; bottom: 40px; right: 30px; width: 75px; height: 75px;
+            border-radius: 24px; background: var(--primary); color: white; border: none;
+            font-size: 35px; cursor: pointer; box-shadow: 0 20px 40px rgba(99, 102, 241, 0.5);
+            transition: 0.3s; z-index: 99;
+        }
+        .fab:hover { transform: rotate(90deg) scale(1.1); }
+
+        @media (max-width: 768px) {
+            .weather-card { grid-template-columns: 1fr; text-align: center; }
+            .weather-section { text-align: center; }
+            .tabs { flex-wrap: wrap; }
+        }
+    </style>
 </head>
 <body>
 
@@ -35,9 +204,9 @@
     </div>
 
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('targets')">🎯 Daily Targets</div>
-        <div class="tab" onclick="switchTab('moments')">✨ Special Moments</div>
-        <div class="tab" onclick="switchTab('notes')">📝 Notes</div>
+        <div class="tab active" onclick="switchTab('targets', event)">🎯 Daily Targets</div>
+        <div class="tab" onclick="switchTab('moments', event)">✨ Special Moments</div>
+        <div class="tab" onclick="switchTab('notes', event)">📝 Notes</div>
     </div>
 
     <div class="container">
@@ -47,7 +216,7 @@
     <button class="fab" onclick="openAddSheet()">+</button>
 
     <!-- Add Entry Sheet -->
-    <div class="overlay" id="addSheet" onclick="toggleSheet('addSheet')">
+    <div class="overlay" id="addSheet" onclick="closeSheet(event, 'addSheet')">
         <div class="modal" onclick="event.stopPropagation()">
             <h1 style="margin-top:0" id="modalTitle">New Entry</h1>
             
@@ -65,7 +234,299 @@
         </div>
     </div>
 
-    <script type="module" src="assets/Index.js"></script>
+    <script>
+        let currentTab = 'targets';
+        const gradients = [
+            'linear-gradient(135deg, #6366f1, #a855f7)',
+            'linear-gradient(135deg, #3b82f6, #2dd4bf)',
+            'linear-gradient(135deg, #f43f5e, #fb923c)',
+            'linear-gradient(135deg, #10b981, #3b82f6)',
+            'linear-gradient(135deg, #f59e0b, #ef4444)',
+            'linear-gradient(135deg, #8b5cf6, #ec4899)'
+        ];
 
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDateTime();
+            setInterval(updateDateTime, 60000); // Update every minute
+            loadWeather();
+            setTodayDate();
+            loadData();
+            updateStorageInfo();
+        });
+
+        // Date & Time
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            document.getElementById('currentDay').textContent = now.toLocaleDateString('en-US', { weekday: 'long' });
+        }
+
+        function setTodayDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+        }
+
+        // Weather with Geolocation
+        async function loadWeather() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        await fetchWeather(lat, lon);
+                    },
+                    (error) => {
+                        console.log('Location access denied:', error);
+                        document.getElementById('weatherLocation').textContent = '📍 Location access denied';
+                        loadDefaultWeather();
+                    }
+                );
+            } else {
+                document.getElementById('weatherLocation').textContent = '📍 Geolocation not supported';
+                loadDefaultWeather();
+            }
+        }
+
+        async function fetchWeather(lat, lon) {
+            try {
+                // Using Open-Meteo API (free, no API key required)
+                const weatherResponse = await fetch(
+                    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`
+                );
+                const weatherData = await weatherResponse.json();
+
+                // Get location name using reverse geocoding
+                const geoResponse = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+                );
+                const geoData = await geoResponse.json();
+
+                const temp = Math.round(weatherData.current.temperature_2m);
+                const weatherCode = weatherData.current.weather_code;
+                const weatherDesc = getWeatherDescription(weatherCode);
+                
+                const city = geoData.address.city || geoData.address.town || geoData.address.village || geoData.address.state || 'Your Location';
+
+                document.getElementById('weatherTemp').textContent = temp + '°C';
+                document.getElementById('weatherDesc').textContent = weatherDesc;
+                document.getElementById('weatherLocation').textContent = `📍 ${city}`;
+            } catch (error) {
+                console.error('Weather fetch error:', error);
+                loadDefaultWeather();
+            }
+        }
+
+        function getWeatherDescription(code) {
+            const weatherCodes = {
+                0: 'Clear Sky',
+                1: 'Mainly Clear',
+                2: 'Partly Cloudy',
+                3: 'Overcast',
+                45: 'Foggy',
+                48: 'Foggy',
+                51: 'Light Drizzle',
+                53: 'Drizzle',
+                55: 'Heavy Drizzle',
+                61: 'Light Rain',
+                63: 'Rain',
+                65: 'Heavy Rain',
+                71: 'Light Snow',
+                73: 'Snow',
+                75: 'Heavy Snow',
+                77: 'Snow Grains',
+                80: 'Light Showers',
+                81: 'Showers',
+                82: 'Heavy Showers',
+                85: 'Light Snow Showers',
+                86: 'Snow Showers',
+                95: 'Thunderstorm',
+                96: 'Thunderstorm with Hail',
+                99: 'Thunderstorm with Hail'
+            };
+            return weatherCodes[code] || 'Unknown';
+        }
+
+        function loadDefaultWeather() {
+            document.getElementById('weatherTemp').textContent = '25°C';
+            document.getElementById('weatherDesc').textContent = 'Clear Sky';
+            if (!document.getElementById('weatherLocation').textContent.includes('📍')) {
+                document.getElementById('weatherLocation').textContent = '📍 Default Location';
+            }
+        }
+
+        // Tab Switching
+        function switchTab(tab, event) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            loadData();
+        }
+
+        // Modal Management
+        function openAddSheet() {
+            const overlay = document.getElementById('addSheet');
+            const modal = overlay.querySelector('.modal');
+            
+            // Set entry type based on current tab
+            document.getElementById('entryType').value = currentTab === 'targets' ? 'target' : currentTab === 'moments' ? 'moment' : 'note';
+            setTodayDate();
+            
+            overlay.classList.add('show');
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+
+        function closeSheet(event, sheetId) {
+            if (event.target.classList.contains('overlay')) {
+                const overlay = document.getElementById(sheetId);
+                const modal = overlay.querySelector('.modal');
+                modal.classList.remove('active');
+                setTimeout(() => overlay.classList.remove('show'), 400);
+            }
+        }
+
+        // Save Entry
+        function saveEntry() {
+            const title = document.getElementById('title').value.trim();
+            const date = document.getElementById('date').value;
+            const desc = document.getElementById('desc').value.trim();
+            const type = document.getElementById('entryType').value;
+
+            if (!title || !date || !desc) {
+                alert('Please fill all fields!');
+                return;
+            }
+
+            const entry = {
+                id: Date.now(),
+                title,
+                date,
+                desc,
+                type,
+                color: gradients[Math.floor(Math.random() * gradients.length)],
+                created: new Date().toISOString(),
+                completed: false
+            };
+
+            // Get existing data
+            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
+            data.push(entry);
+            localStorage.setItem('echoData', JSON.stringify(data));
+
+            // Clear form
+            document.getElementById('title').value = '';
+            document.getElementById('desc').value = '';
+            
+            // Close modal
+            const overlay = document.getElementById('addSheet');
+            const modal = overlay.querySelector('.modal');
+            modal.classList.remove('active');
+            setTimeout(() => overlay.classList.remove('show'), 400);
+            
+            loadData();
+            updateStorageInfo();
+        }
+
+        // Load Data
+        function loadData() {
+            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
+            const filtered = data.filter(item => item.type === currentTab.slice(0, -1));
+            
+            const grid = document.getElementById('mainGrid');
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; color: #64748b;">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">📝</div>
+                        <h3>No entries yet</h3>
+                        <p>Click the + button to add your first ${currentTab.slice(0, -1)}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.sort((a, b) => new Date(b.created) - new Date(a.created)).map(item => {
+                const badge = item.type === 'target' ? '🎯' : item.type === 'moment' ? '✨' : '📝';
+                
+                if (item.type === 'target') {
+                    return `
+                        <div class="card">
+                            <button class="delete-btn" onclick="deleteEntry(${item.id}, event)">×</button>
+                            <div class="card-header" style="background: ${item.color}">
+                                <span class="card-badge">${badge}</span>
+                                ${item.title}
+                            </div>
+                            <div class="card-body">
+                                <span class="card-date">${item.date}</span>
+                                <p class="card-desc">${item.desc}</p>
+                                ${item.completed ? '<p style="color: #10b981; font-weight: 700; margin-top: 10px;">✓ Completed</p>' : `
+                                    <div class="target-actions">
+                                        <button class="btn-small btn-complete" onclick="completeTarget(${item.id}, event)">✓ Complete</button>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="card">
+                            <button class="delete-btn" onclick="deleteEntry(${item.id}, event)">×</button>
+                            <div class="card-header" style="background: ${item.color}">
+                                <span class="card-badge">${badge}</span>
+                                ${item.title}
+                            </div>
+                            <div class="card-body">
+                                <span class="card-date">${item.date}</span>
+                                <p class="card-desc">${item.desc}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        // Complete Target
+        function completeTarget(id, event) {
+            event.stopPropagation();
+            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
+            const entry = data.find(item => item.id === id);
+            if (entry) {
+                entry.completed = true;
+                localStorage.setItem('echoData', JSON.stringify(data));
+                loadData();
+            }
+        }
+
+        // Delete Entry
+        function deleteEntry(id, event) {
+            event.stopPropagation();
+            if (!confirm('Delete this entry?')) return;
+            
+            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
+            const filtered = data.filter(item => item.id !== id);
+            localStorage.setItem('echoData', JSON.stringify(filtered));
+            loadData();
+            updateStorageInfo();
+        }
+
+        // Storage Info
+        function updateStorageInfo() {
+            const data = JSON.parse(localStorage.getItem('echoData') || '[]');
+            document.getElementById('storageInfo').textContent = `${data.length} entries`;
+        }
+
+        // Export Data
+        function exportData() {
+            const data = localStorage.getItem('echoData') || '[]';
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `echo-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('Data exported successfully!');
+        }
+    </script>
 </body>
 </html>
