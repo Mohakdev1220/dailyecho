@@ -245,17 +245,43 @@ function stopDraftTimer() {
 function recoverDraft() {
   const draft = lsGet(DRAFT_KEY, null);
   if (!draft) return;
-  const formIsBlank = !dom.entryTitle?.value && !dom.entryDescription?.value;
-  if (formIsBlank && (draft.title || draft.description)) {
+
+  // Only recover if draft has real content — not just a date/type
+  const hasRealContent = (draft.title || "").trim() || (draft.description || "").trim();
+  if (!hasRealContent) {
+    clearDraft(); // wipe empty/stale drafts silently
+    return;
+  }
+
+  // Don't auto-open modal — just show a toast the user can act on
+  const ago = Math.round((Date.now() - draft.savedAt) / 60000);
+  const msg = `Unsaved draft found (${ago < 1 ? "just now" : ago + "m ago"}). Click to restore.`;
+
+  const el = document.createElement("div");
+  el.className = "toast toast--info";
+  el.setAttribute("role", "alert");
+  el.style.cursor = "pointer";
+  el.innerHTML = `📝 ${msg}`;
+  dom.toastWrap?.appendChild(el);
+
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("toast--visible")));
+
+  // Clicking the toast opens the draft
+  el.addEventListener("click", () => {
     dom.entryType.value        = draft.type        || "note";
     dom.entryTitle.value       = draft.title       || "";
     dom.entryDate.value        = draft.date        || todayISO();
     dom.entryDescription.value = draft.description || "";
     state.editingId             = draft.editingId  || null;
-    const ago = Math.round((Date.now() - draft.savedAt) / 60000);
-    toast(`Draft recovered (saved ${ago < 1 ? "just now" : ago + "m ago"})`, "info");
     openEntryModal();
-  }
+    el.remove();
+  });
+
+  // Auto-dismiss after 8 seconds
+  setTimeout(() => {
+    el.classList.remove("toast--visible");
+    setTimeout(() => el.remove(), 500);
+  }, 8000);
 }
 
 // ─── Char Counters ────────────────────────────────────────────────────────────
@@ -532,11 +558,10 @@ function renderEntries() {
 
   const filtered = getFilteredEntries();
 
-  // FIX: toggle the static emptyState div that already exists in HTML
+ // Toggle empty state
   if (dom.emptyState) {
     if (filtered.length === 0) {
-      dom.emptyState.hidden = false;
-      // Update empty state message based on context
+      dom.emptyState.style.display = "flex";
       const titleEl = dom.emptyState.querySelector(".empty-title");
       const subEl   = dom.emptyState.querySelector(".empty-sub");
       if (state.searchQuery) {
@@ -555,10 +580,9 @@ function renderEntries() {
       }
       return;
     } else {
-      dom.emptyState.hidden = true;
+      dom.emptyState.style.display = "none";
     }
   }
-
   const fragment = document.createDocumentFragment();
   filtered.forEach((entry) => {
     const card = buildEntryCard(entry);
@@ -653,7 +677,13 @@ function closeEntryModal() {
   dom.entryOverlay.hidden = true;
   dom.entryOverlay.setAttribute("aria-hidden", "true");
   stopDraftTimer();
-  saveDraft();
+  // Only save draft if there is actual content worth keeping
+  const hasContent = dom.entryTitle?.value.trim() || dom.entryDescription?.value.trim();
+  if (hasContent) {
+    saveDraft();
+  } else {
+    clearDraft();
+  }
 }
 
 function openAuthModal() {
@@ -750,6 +780,11 @@ async function googleSignIn() {
 
 async function handleSignOut() {
   closeProfileMenu();
+  // Guard: do nothing if no user is signed in
+  if (!state.user) {
+    toast("You are not signed in.", "warning");
+    return;
+  }
   try {
     stopFirestoreListener();
     await signOut(auth);
@@ -1167,6 +1202,11 @@ function initAuth() {
 // ─── Bootstrap ────────────────────────────────────────────────────────────────
 
 function init() {
+  // Force correct auth UI immediately before Firebase resolves
+  // This prevents sign-out button flashing for guests
+  if (dom.signOutBtn)      dom.signOutBtn.hidden      = true;
+  if (dom.googleSignInBtn) dom.googleSignInBtn.hidden = false;
+
   // Immediately show cached entries
   state.entries = loadCache();
   renderEntries();
