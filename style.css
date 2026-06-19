@@ -1290,3 +1290,7 @@ textarea {
 
   .footer-copy { white-space: normal; }
 }
+/* Force hidden attribute to always work */
+[hidden] {
+  display: none !important;
+}
